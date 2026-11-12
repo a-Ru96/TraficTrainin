@@ -182,6 +182,11 @@ kbd { font: inherit; font-size: .72rem; opacity: .7; border: 1px solid currentCo
 .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 
 /* leaderboard */
+.seg { display: inline-flex; background: var(--s1); border: 1px solid var(--line); border-radius: 10px; padding: 4px; margin-bottom: 18px; max-width: 100%; }
+.seg button { font: inherit; font-weight: 600; font-size: .88rem; color: var(--muted); background: transparent; border: 0; padding: 8px 16px; border-radius: 7px; cursor: pointer; white-space: nowrap; transition: .15s; }
+.seg button:hover { color: var(--text); }
+.seg button.on { background: var(--s3); color: var(--text); }
+@media (max-width: 480px) { .seg { display: flex; } .seg button { flex: 1; padding: 8px 6px; } .streak-col { display: none; } }
 .lb { display: grid; gap: 8px; }
 .lb-row { display: flex; align-items: center; gap: 14px; background: var(--s1); border: 1px solid var(--line); padding: 13px 18px; border-radius: 12px; font-weight: 500; }
 .lb-row.me { border-color: var(--accent); background: rgba(109,140,255,.08); }

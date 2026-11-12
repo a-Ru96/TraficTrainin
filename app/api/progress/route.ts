@@ -28,6 +28,13 @@ export async function POST(req: Request) {
       last_day = CURRENT_DATE
       WHERE user_id = ${uid}`;
 
+    // Daily XP log feeds the daily/monthly leaderboards. Guest XP being merged is not logged,
+    // so it doesn't count as activity "today".
+    if (!merge && gain > 0) {
+      await sql`INSERT INTO xp_log (user_id, day, xp) VALUES (${uid}, CURRENT_DATE, ${gain})
+        ON CONFLICT (user_id, day) DO UPDATE SET xp = xp_log.xp + EXCLUDED.xp`;
+    }
+
     if (body.known && typeof body.known === "object") {
       const entries = Object.entries(body.known as Record<string, unknown>)
         .filter(([k, v]) => typeof k === "string" && k.length < 60 && typeof v === "boolean")

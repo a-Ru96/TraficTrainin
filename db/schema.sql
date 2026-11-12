@@ -20,6 +20,12 @@ CREATE TABLE IF NOT EXISTS card_progress (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   PRIMARY KEY (user_id, card_id)
 );
+CREATE TABLE IF NOT EXISTS xp_log (
+  user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  day DATE NOT NULL,
+  xp INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (user_id, day)
+);
 CREATE TABLE IF NOT EXISTS quiz_results (
   id SERIAL PRIMARY KEY,
   user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
