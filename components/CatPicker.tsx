@@ -10,7 +10,7 @@ export function CatPicker({ value, onChange, counts }: {
         <button key={c.key} role="tab" aria-selected={value === c.key}
           className={`chip ${value === c.key ? "on" : ""}`} style={{ ["--c" as string]: c.color }}
           onClick={() => onChange(c.key)}>
-          <span>{c.emoji}</span> {c.label}
+          <i className="dot" />{c.label}
           {counts?.[c.key] !== undefined && <b>{counts[c.key]}</b>}
         </button>
       ))}

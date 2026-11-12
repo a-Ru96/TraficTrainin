@@ -6,17 +6,20 @@ export const metadata = { title: "Safety facts · LevhaLab" };
 export default function Safety() {
   return (
     <>
-      <div className="page-title"><h1 style={{ fontSize: "2rem", margin: 0 }}>🛡️ Safety Facts</h1></div>
-      <p className="muted">As important as the signs: life-saving facts from the Highway Code. Read them, then test yourself.</p>
-      <div className="row" style={{ marginBottom: 18 }}>
-        <Link href="/quiz?kat=safety" className="btn btn-lime">⚡ Safety quiz</Link>
-        <Link href="/kartlar?kat=safety" className="btn btn-ghost">🃏 Study as cards</Link>
+      <div className="page-head">
+        <h1>Safety facts</h1>
+        <p className="muted">As important as the signs: key figures and rules from the Highway Code. Read them, then test yourself.</p>
+      </div>
+      <div className="row" style={{ marginBottom: 22 }}>
+        <Link href="/quiz?kat=safety" className="btn">Take the safety quiz</Link>
+        <Link href="/kartlar?kat=safety" className="btn btn-ghost">Study as flashcards</Link>
       </div>
       <div className="fact-list">
-        {FACTS.map((f) => (
+        {FACTS.map((f, i) => (
           <article key={f.id} className="fact">
-            <span className="emoji">{f.emoji}</span>
-            <div><h3>{f.title}</h3><p>{f.text}</p></div>
+            <span className="n">{String(i + 1).padStart(2, "0")}</span>
+            <h3>{f.title}</h3>
+            <p>{f.text}</p>
           </article>
         ))}
       </div>

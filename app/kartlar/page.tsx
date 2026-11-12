@@ -3,7 +3,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useApp } from "@/components/AppProvider";
 import { CatPicker } from "@/components/CatPicker";
-import { Confetti } from "@/components/Confetti";
 import { Sign } from "@/components/Sign";
 import { ALL_CARDS, Card, deckFor } from "@/lib/deck";
 import { CatKey } from "@/lib/signs";
@@ -64,24 +63,26 @@ export default function Flashcards() {
 
   return (
     <>
-      <div className="page-title"><h1 style={{ fontSize: "2rem", margin: 0 }}>🃏 Flashcards</h1></div>
-      <CatPicker value={cat} onChange={setCat} counts={counts} />
-      <div className="row" style={{ justifyContent: "space-between", fontSize: ".85rem" }} aria-live="polite">
-        <span className="muted"><span className="known-dot" /> {knownInCat}/{deckFor(cat).length} learned</span>
-        <button className="btn btn-sm btn-ghost" onClick={() => start(cat)}>🔀 Shuffle</button>
+      <div className="page-head">
+        <h1>Flashcards</h1>
+        <p className="muted">Flip the card, then mark whether you knew it.</p>
       </div>
-      <div className="progress" style={{ margin: "10px 0" }}><i style={{ width: `${pct}%` }} /></div>
+      <CatPicker value={cat} onChange={setCat} counts={counts} />
+      <div className="row" style={{ justifyContent: "space-between", fontSize: ".85rem", margin: "4px 0 10px" }} aria-live="polite">
+        <span className="muted"><span className="known-dot" />{knownInCat} / {deckFor(cat).length} learned</span>
+        <button className="btn btn-sm btn-ghost" onClick={() => start(cat)}>Shuffle</button>
+      </div>
+      <div className="progress"><i style={{ width: `${pct}%` }} /></div>
 
       {done ? (
-        <div className="card center" style={{ textAlign: "center", marginTop: 20 }}>
-          {learned >= 5 && <Confetti />}
-          <div style={{ fontSize: "3.5rem" }}>🎉</div>
-          <h2>Deck complete!</h2>
-          <p className="muted">You knew {learned} cards. Want to focus only on the ones you missed?</p>
+        <div className="card" style={{ textAlign: "center", marginTop: 24 }}>
+          <div className="eyebrow">Deck complete</div>
+          <div className="score-big">{learned}</div>
+          <p className="muted">cards known this round. Focus on the ones you missed, or start over.</p>
           <div className="row center">
-            <button className="btn btn-lime" onClick={() => start(cat, true)}>🎯 Study missed cards</button>
-            <button className="btn btn-ghost" onClick={() => start(cat)}>🔁 Restart</button>
-            <Link href="/quiz" className="btn btn-cyan">⚡ Go to quiz</Link>
+            <button className="btn" onClick={() => start(cat, true)}>Study missed cards</button>
+            <button className="btn btn-ghost" onClick={() => start(cat)}>Restart deck</button>
+            <Link href="/quiz" className="btn btn-ghost">Take a quiz</Link>
           </div>
         </div>
       ) : card ? (
@@ -90,32 +91,41 @@ export default function Flashcards() {
             role="button" aria-label="Flip card" key={`${card.id}-${idx}`}>
             <div className="flip-in">
               <div className="face">
-                {card.signId ? <Sign id={card.signId} size={170} /> : <span className="emoji">{card.emoji}</span>}
-                <div className={card.signId ? "muted" : "term"}>{card.front}</div>
+                {card.signId ? (
+                  <>
+                    <Sign id={card.signId} size={150} />
+                    <div className="muted">{card.front}</div>
+                  </>
+                ) : (
+                  <>
+                    <div className="tag">Safety fact</div>
+                    <div className="term">{card.front}</div>
+                  </>
+                )}
                 <span className="hint">Tap to flip · Space</span>
               </div>
               <div className="face back">
                 {card.signId ? (
                   <>
+                    <div className="tag">Meaning</div>
                     <div className="term">{card.back}</div>
-                    <div className="sub">{card.backSub}</div>
-                    {card.tip && <div className="tip">💡 {card.tip}</div>}
+                    {card.tip && <div className="tip">{card.tip}</div>}
                   </>
                 ) : (
                   <>
-                    <span className="emoji">{card.emoji}</span>
-                    <div className="fact">{card.back}</div>
+                    <div className="tag">{card.front}</div>
+                    <div className="fact-text">{card.back}</div>
                   </>
                 )}
               </div>
             </div>
           </div>
           <div className="row center">
-            <button className="btn btn-red" disabled={!flipped} onClick={() => answer(false)}>🔁 Again <small>←</small></button>
-            <button className="btn btn-lime" disabled={!flipped} onClick={() => answer(true)}>🙌 Got it <small>→</small></button>
+            <button className="btn btn-bad" disabled={!flipped} onClick={() => answer(false)}>Again<kbd>←</kbd></button>
+            <button className="btn btn-ok" disabled={!flipped} onClick={() => answer(true)}>Got it<kbd>→</kbd></button>
           </div>
-          <p className="muted center" style={{ textAlign: "center", marginTop: 14, fontSize: ".85rem" }}>
-            Card {Math.min(idx + 1, queue.length)} / {queue.length}
+          <p className="muted" style={{ textAlign: "center", marginTop: 14, fontSize: ".82rem" }}>
+            Card {Math.min(idx + 1, queue.length)} of {queue.length}
           </p>
         </>
       ) : null}

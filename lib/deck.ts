@@ -6,7 +6,6 @@ export interface Card {
   id: string;
   cat: CatKey;
   signId?: string;
-  emoji?: string;
   front: string;
   back: string;
   backSub?: string;
@@ -19,7 +18,7 @@ export const ALL_CARDS: Card[] = [
     front: "What does this sign mean?", back: s.en, tip: s.tip,
   })),
   ...FACTS.map<Card>((f) => ({
-    id: `f:${f.id}`, cat: "safety", emoji: f.emoji,
+    id: `f:${f.id}`, cat: "safety",
     front: f.title, back: f.text,
   })),
 ];
@@ -62,7 +61,7 @@ function factQuestion(id: string): Question {
   const f = FACTS.find((x) => x.id === id)!;
   const order = shuffle(f.options.map((label, i) => ({ label, i })));
   return { id: `fact:${id}`, kind: "fact", prompt: f.q, options: order.map((o) => ({ label: o.label })),
-    answer: order.findIndex((o) => o.i === f.a), explain: `${f.emoji} ${f.title}: ${f.text}` };
+    answer: order.findIndex((o) => o.i === f.a), explain: `${f.title}: ${f.text}` };
 }
 
 export function buildQuiz(cat: CatKey | "all", n = 10): Question[] {

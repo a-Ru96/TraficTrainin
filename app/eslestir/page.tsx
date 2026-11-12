@@ -1,10 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "@/components/AppProvider";
-import { Confetti } from "@/components/Confetti";
 import { Sign } from "@/components/Sign";
 import { SIGNS, SignDef } from "@/lib/signs";
-import { sample, shuffle } from "@/lib/util";
+import { shuffle } from "@/lib/util";
 
 const PAIRS = 6;
 
@@ -67,48 +66,48 @@ export default function MatchGame() {
 
   const pickL = (id: string) => { setSelL(id); if (selR) check(id, selR); };
   const pickR = (id: string) => { setSelR(id); if (selL) check(selL, id); };
-  const cls = (id: string, side: "l" | "r", sel: string | null) =>
-    `m ${sel === id ? "sel" : ""} ${done.has(id) ? "done" : ""} ${flash?.ids.includes(id) && (flash.kind === "good" || true) ? flash.kind : ""}`;
+  const cls = (id: string, sel: string | null) =>
+    `m ${sel === id ? "sel" : ""} ${done.has(id) ? "done" : ""} ${flash?.ids.includes(id) ? flash.kind : ""}`;
 
   if (!round) return null;
   return (
     <>
-      <div className="page-title"><h1 style={{ fontSize: "2rem", margin: 0 }}>🧩 Match Up</h1></div>
+      <div className="page-head">
+        <h1>Match up</h1>
+        <p className="muted">Pick a sign on the left, then its meaning on the right.</p>
+      </div>
       <div className="q-head">
-        <span>⏱️ {time} s</span>
-        <span className="muted">Mistakes: {mistakes}</span>
-        <span style={{ color: "var(--cyan)" }}>{best["match"] ? `Best: ${best["match"]} s` : "No record yet"}</span>
+        <span>{time}s</span>
+        <span>Mistakes: {mistakes}</span>
+        <span>{best["match"] ? `Best: ${best["match"]}s` : "No record yet"}</span>
       </div>
       <div className="progress"><i style={{ width: `${(done.size / PAIRS) * 100}%` }} /></div>
 
       {finished ? (
         <div className="card" style={{ textAlign: "center", marginTop: 16 }}>
-          <Confetti />
-          <div style={{ fontSize: "3.4rem" }}>{newBest ? "🏅" : "✅"}</div>
-          <div className="score-big">{time} s</div>
-          <h2>{newBest ? "New record!" : "Done!"}</h2>
-          <p className="muted">{mistakes} mistakes. Can you go faster and cleaner?</p>
-          <button className="btn btn-lime btn-lg" onClick={start}>🔁 New round</button>
+          <div className="eyebrow">{newBest ? "New personal best" : "Round complete"}</div>
+          <div className="score-big">{time}s</div>
+          <p className="muted">{mistakes} {mistakes === 1 ? "mistake" : "mistakes"}. Can you go faster and cleaner?</p>
+          <button className="btn btn-lg" onClick={start}>New round</button>
         </div>
       ) : (
         <div className="match">
           <div className="m-col">
             {round.left.map((s) => (
-              <button key={s.id} className={cls(s.id, "l", selL)} disabled={done.has(s.id)} onClick={() => pickL(s.id)}>
-                <Sign id={s.id} size={72} />
+              <button key={s.id} className={cls(s.id, selL)} disabled={done.has(s.id)} onClick={() => pickL(s.id)}>
+                <Sign id={s.id} size={68} />
               </button>
             ))}
           </div>
           <div className="m-col">
             {round.right.map((s) => (
-              <button key={s.id} className={cls(s.id, "r", selR)} disabled={done.has(s.id)} onClick={() => pickR(s.id)}>
+              <button key={s.id} className={cls(s.id, selR)} disabled={done.has(s.id)} onClick={() => pickR(s.id)}>
                 {s.en}
               </button>
             ))}
           </div>
         </div>
       )}
-      {!finished && <p className="muted center" style={{ textAlign: "center", marginTop: 14, fontSize: ".85rem" }}>Pick a sign on the left, then its meaning on the right.</p>}
     </>
   );
 }

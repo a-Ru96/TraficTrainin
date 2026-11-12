@@ -14,14 +14,14 @@ export interface SignDef {
   tip: string;
 }
 
-export const CATS: { key: CatKey | "all"; label: string; emoji: string; color: string }[] = [
-  { key: "all", label: "All", emoji: "🎲", color: "#7c4dff" },
-  { key: "warning", label: "Warning", emoji: "⚠️", color: "#ffd23f" },
-  { key: "prohibit", label: "Rules", emoji: "⛔", color: "#ff3d5a" },
-  { key: "speed", label: "Speed", emoji: "🏎️", color: "#ff8a3d" },
-  { key: "mandatory", label: "Mandatory", emoji: "🔵", color: "#2ee6ff" },
-  { key: "info", label: "Info", emoji: "ℹ️", color: "#4d8bff" },
-  { key: "safety", label: "Safety", emoji: "🛡️", color: "#b6ff3b" },
+export const CATS: { key: CatKey | "all"; label: string; color: string }[] = [
+  { key: "all", label: "All", color: "#6d8cff" },
+  { key: "warning", label: "Warning", color: "#f5b94a" },
+  { key: "prohibit", label: "Rules", color: "#ff6b6b" },
+  { key: "speed", label: "Speed", color: "#ff9f5a" },
+  { key: "mandatory", label: "Mandatory", color: "#4cc2ff" },
+  { key: "info", label: "Info", color: "#8b9dff" },
+  { key: "safety", label: "Safety", color: "#3ddc97" },
 ];
 
 export const FRAMES: Record<Frame, string> = {

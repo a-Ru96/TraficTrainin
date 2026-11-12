@@ -26,12 +26,12 @@ export default function Auth() {
 
   if (user) {
     return (
-      <div className="card auth center" style={{ textAlign: "center" }}>
-        <div style={{ fontSize: "3.4rem" }}>😎</div>
-        <h2>Hey, {user.nickname}!</h2>
-        <p className="muted">LV {level} · {xp} XP · 🔥 {streak} day streak</p>
+      <div className="card auth" style={{ textAlign: "center" }}>
+        <div className="eyebrow">Signed in</div>
+        <h2>{user.nickname}</h2>
+        <p className="muted">Level {level} · {xp} XP · {streak} day streak</p>
         <div className="row center">
-          <Link href="/quiz" className="btn btn-lime">⚡ Keep playing</Link>
+          <Link href="/quiz" className="btn">Keep studying</Link>
           <button className="btn btn-ghost" onClick={() => logout()}>Log out</button>
         </div>
       </div>
@@ -40,8 +40,8 @@ export default function Auth() {
 
   return (
     <div className="card auth">
-      <h2 style={{ textAlign: "center" }}>{tab === "login" ? "Welcome back 👋" : "Join the crew 🚀"}</h2>
-      <p className="muted" style={{ textAlign: "center" }}>Take your progress to every device and claim your spot on the leaderboard.</p>
+      <h2 style={{ textAlign: "center" }}>{tab === "login" ? "Welcome back" : "Create your account"}</h2>
+      <p className="muted" style={{ textAlign: "center", fontSize: ".92rem" }}>Sync your progress across devices and appear on the leaderboard.</p>
 
       {!dbOn ? (
         <div className="err">Accounts are unavailable right now (no database connected). You can continue as a guest.</div>
@@ -55,25 +55,25 @@ export default function Auth() {
             {err && <div className="err" role="alert">{err}</div>}
             {tab === "register" && (
               <label className="field">Nickname
-                <input value={nick} onChange={(e) => setNick(e.target.value)} required minLength={2} maxLength={20} autoComplete="nickname" placeholder="e.g. SignHunter" />
+                <input value={nick} onChange={(e) => setNick(e.target.value)} required minLength={2} maxLength={20} autoComplete="nickname" placeholder="e.g. alex" />
               </label>
             )}
             <label className="field">Email
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" placeholder="you@mail.com" />
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" placeholder="you@university.ac.uk" />
             </label>
             <label className="field">Password
               <input type="password" value={pw} onChange={(e) => setPw(e.target.value)} required minLength={6}
-                autoComplete={tab === "login" ? "current-password" : "new-password"} placeholder="at least 6 characters" />
+                autoComplete={tab === "login" ? "current-password" : "new-password"} placeholder="At least 6 characters" />
             </label>
             <button className="btn btn-lg" style={{ width: "100%" }} disabled={busy}>
-              {busy ? <span className="spin">⏳</span> : tab === "login" ? "Log in" : "Create account"}
+              {busy ? <span className="spin" /> : tab === "login" ? "Log in" : "Create account"}
             </button>
           </form>
           <div className="divider">or</div>
         </>
       )}
-      <button className="btn btn-ghost" style={{ width: "100%" }} onClick={() => router.push("/")}>👀 Continue as guest</button>
-      {dbOn && <p className="muted" style={{ fontSize: ".8rem", textAlign: "center", marginTop: 12 }}>XP and cards you earned as a guest move to your account when you log in.</p>}
+      <button className="btn btn-ghost" style={{ width: "100%" }} onClick={() => router.push("/")}>Continue as guest</button>
+      {dbOn && <p className="muted" style={{ fontSize: ".8rem", textAlign: "center", marginTop: 14, marginBottom: 0 }}>XP and cards you earned as a guest move to your account when you log in.</p>}
     </div>
   );
 }
