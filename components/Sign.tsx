@@ -10,7 +10,7 @@ export function Sign({ id, size = 96, label, className }: { id: string; size?: n
   if (!s) return null;
   const a11y = label ? { role: "img", "aria-label": label } : { "aria-hidden": true as const };
   return (
-    <span className={`sign-img ${className ?? ""}`} style={{ width: size, height: size }} {...a11y}>
+    <span className={`sign-img ${s.cat === "dashboard" ? "dark" : ""} ${className ?? ""}`} style={{ width: size, height: size }} {...a11y}>
       {s.img ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={s.img} alt="" loading="lazy" decoding="async" draggable={false} />

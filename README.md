@@ -48,3 +48,8 @@ Tables are created automatically on first use (`lib/db.ts`). Reference schema: `
 
 Optimized sign images live in `public/signs/<id>.jpg` (max 360 px). `lib/signImages.ts` lists which ids have an image; signs without one fall back to the SVG drawing in `lib/signs.ts`.
 To add an image: drop `<id>.jpg` into `public/signs/` and add the id to `lib/signImages.ts`. The raw dump folder `levhalar/` is git-ignored.
+
+## Dashboard warning lights & question types
+
+`lib/dashboard.ts` holds 42 dashboard warning lights (name, colour, tip); images are `public/signs/dash-*.jpg`, cropped from a 7x6 grid.
+Quiz question types (`lib/deck.ts`): sign to name, name to sign, sign to "what should you do", sign to group, true/false, light colour urgency, plus fact questions from `lib/facts.ts` and `lib/questions.ts`.

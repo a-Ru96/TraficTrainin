@@ -109,6 +109,7 @@ export default function Flashcards() {
                   <>
                     <div className="tag">Meaning</div>
                     <div className="term">{card.back}</div>
+                    {card.badge && <span className={`badge ${card.badge.tone}`}>{card.badge.text}</span>}
                     {card.tip && <div className="tip">{card.tip}</div>}
                   </>
                 ) : (

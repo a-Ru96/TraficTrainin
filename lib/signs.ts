@@ -1,11 +1,12 @@
 // UK (Highway Code) road signs. All visuals are 100x100 SVG drawn in code.
-export type Cat = "warning" | "prohibit" | "speed" | "mandatory" | "info";
+export type Cat = "warning" | "prohibit" | "speed" | "mandatory" | "info" | "dashboard";
 export type CatKey = Cat | "safety";
 export type Frame =
   | "warn" | "giveway" | "stop" | "prohibit" | "mandatory"
   | "rect" | "natl" | "noentry" | "clearway";
 
 import { SIGN_IMAGES } from "./signImages";
+import { DASH_SIGNS } from "./dashboard";
 
 export interface SignDef {
   id: string;
@@ -15,6 +16,8 @@ export interface SignDef {
   icon?: string; // inner SVG markup
   /** set automatically from SIGN_IMAGES */
   img?: string;
+  /** dashboard warning lights only */
+  color?: "red" | "amber" | "green";
   en: string;
   tip: string;
 }
@@ -26,6 +29,7 @@ export const CATS: { key: CatKey | "all"; label: string; color: string }[] = [
   { key: "speed", label: "Speed", color: "#ff9f5a" },
   { key: "mandatory", label: "Mandatory", color: "#4cc2ff" },
   { key: "info", label: "Info", color: "#8b9dff" },
+  { key: "dashboard", label: "Dashboard lights", color: "#c084fc" },
   { key: "safety", label: "Safety", color: "#3ddc97" },
 ];
 
@@ -221,7 +225,7 @@ const EXTRA: SignDef[] = [
   { id: "cycle-route", cat: "info", en: "Recommended cycle route", tip: "A signed route that's suitable for cyclists." },
   { id: "homezone", cat: "info", en: "Home zone", tip: "Residential street. Drive slowly, children may be playing." },
 ];
-SIGNS.push(...EXTRA);
+SIGNS.push(...EXTRA, ...DASH_SIGNS);
 for (const s of SIGNS) if (SIGN_IMAGES.has(s.id)) s.img = `/signs/${s.id}.jpg`;
 
 export const SIGN_MAP: Record<string, SignDef> = Object.fromEntries(SIGNS.map((s) => [s.id, s]));

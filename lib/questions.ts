@@ -1,0 +1,62 @@
+// Extra standalone safety / Highway Code questions (UK). Mixed into quizzes alongside the FACTS questions.
+export interface StandaloneQ {
+  id: string;
+  q: string;
+  options: string[];
+  a: number;
+  explain: string;
+}
+
+export const MORE_QUESTIONS: StandaloneQ[] = [
+  { id: "zebra", q: "A pedestrian has stepped onto a zebra crossing. What must you do?",
+    options: ["Give way", "Sound your horn", "Speed up to clear it", "Flash your lights and continue"], a: 0,
+    explain: "You must give way to anyone who has moved onto a zebra crossing." },
+  { id: "hazard", q: "When may you use hazard warning lights while driving?",
+    options: ["To thank another driver", "On a motorway or fast dual carriageway to warn of a hazard ahead", "When parking illegally for a moment", "In heavy rain"], a: 1,
+    explain: "Hazards while moving are for warning traffic behind of a sudden hazard or queue on a motorway or unrestricted dual carriageway." },
+  { id: "dipped", q: "When must you use dipped headlights during the day?",
+    options: ["Always on single carriageways", "When visibility is seriously reduced", "Only in tunnels", "Only on motorways"], a: 1,
+    explain: "Use dipped headlights in daytime when visibility is seriously reduced, generally less than 100 m." },
+  { id: "age", q: "What is the minimum age to drive a car in the UK (without special circumstances)?",
+    options: ["16", "17", "18", "21"], a: 1, explain: "You can drive a car from 17 (16 if you receive certain mobility allowances)." },
+  { id: "motorway", q: "What is the national speed limit for cars on a motorway?",
+    options: ["60 mph", "70 mph", "80 mph", "50 mph"], a: 1, explain: "Cars: 70 mph on motorways and dual carriageways, unless signs show a lower limit." },
+  { id: "pelican", q: "At a pelican crossing, what does a flashing amber light mean?",
+    options: ["Stop and wait", "Give way to pedestrians on the crossing, and go if it's clear", "The crossing is out of order", "Speed up to clear the crossing"], a: 1,
+    explain: "Flashing amber means you must give way to pedestrians still on the crossing, but you may proceed if it is clear." },
+  { id: "blue", q: "An emergency vehicle with blue lights and a siren is behind you. What should you do?",
+    options: ["Brake hard where you are", "Pull over safely without breaking the law", "Run the red light to get out of the way", "Speed up"], a: 1,
+    explain: "Consider the route, take appropriate action to let it pass, and don't break traffic laws or put anyone at risk." },
+  { id: "amber", q: "The traffic light changes to amber and you can stop safely. What should you do?",
+    options: ["Speed up", "Stop", "Keep going", "Flash your lights"], a: 1,
+    explain: "Amber means stop, unless you are so close to the line that stopping might cause an accident." },
+  { id: "miniround", q: "Who has priority at a mini-roundabout?",
+    options: ["Traffic from the left", "Traffic already on it, coming from your right", "The biggest vehicle", "Traffic going straight on"], a: 1,
+    explain: "Give way to traffic approaching from your right, as at any roundabout." },
+  { id: "horse", q: "What is the correct way to pass a horse and rider?",
+    options: ["Quickly and close", "Slowly, at no more than 10 mph, leaving at least 2 m", "Sounding your horn", "Revving your engine"], a: 1,
+    explain: "Pass wide and slow, at no more than 10 mph, leaving at least 2 metres, and avoid sudden noise." },
+  { id: "zigzag", q: "What do zig-zag white lines at a pedestrian crossing mean?",
+    options: ["Parking is allowed", "No stopping or parking, and no overtaking", "Slow zone only", "Cyclists only"], a: 1,
+    explain: "Zig-zag lines keep the crossing clear: no stopping, parking or overtaking in the zig-zag area." },
+  { id: "solid", q: "On a road with double white lines, the line nearest you is solid. What must you do?",
+    options: ["You may cross it to overtake", "You must not cross or straddle it", "Cross it only at night", "Straddle it to pass cyclists"], a: 1,
+    explain: "A solid line on your side means you must not cross or straddle it, apart from a few exceptions such as entering a junction." },
+  { id: "coldtyre", q: "When should you check your tyre pressures?",
+    options: ["After a long motorway drive", "When the tyres are cold", "Only at an MOT", "When it rains"], a: 1,
+    explain: "Check pressures when tyres are cold, because driving heats the tyres and raises the reading." },
+  { id: "highbeam", q: "When should you dip your headlights from full beam?",
+    options: ["Never", "When you might dazzle other road users", "Only in towns", "Only when it rains"], a: 1,
+    explain: "Dip your lights for oncoming traffic and when following other vehicles, so you don't dazzle them." },
+  { id: "lifesaver", q: "Before changing lanes or pulling out, what extra check should you make?",
+    options: ["Check only the interior mirror", "Look over your shoulder into the blind spot", "Sound the horn", "Brake lightly"], a: 1,
+    explain: "A quick look over your shoulder (the lifesaver) covers the blind spot your mirrors miss." },
+  { id: "points", q: "How many penalty points do you get for using a hand-held phone while driving?",
+    options: ["1", "3", "6", "9"], a: 2, explain: "Hand-held phone use carries 6 penalty points and a fine." },
+  { id: "newdriver", q: "A new driver gets 6 or more penalty points within 2 years of passing. What happens?",
+    options: ["A warning letter", "The licence is revoked", "A 1-month ban", "Nothing"], a: 1,
+    explain: "Under the New Drivers Act, 6 or more points within 2 years of passing means your licence is revoked, and you must retake your test." },
+  { id: "redlight", q: "What does a steady red traffic light mean?",
+    options: ["Stop behind the white line", "Slow down and go if clear", "Give way", "Proceed with caution"], a: 0,
+    explain: "Red means stop and wait behind the stop line until the light turns green." },
+];
