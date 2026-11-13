@@ -29,6 +29,7 @@ export default function MatchGame() {
   const start = () => {
     setRound(newRound()); setSelL(null); setSelR(null); setDone(new Set()); setFlash(null);
     setTime(0); setMistakes(0); setFinished(false); setNewBest(false); t0.current = Date.now();
+    submitted.current = false;
   };
   useEffect(start, []);
 
@@ -38,22 +39,25 @@ export default function MatchGame() {
     return () => clearInterval(t);
   }, [round, finished]);
 
+  // Round complete: record the result exactly once.
+  const submitted = useRef(false);
+  useEffect(() => {
+    if (!round || done.size !== PAIRS || submitted.current) return;
+    submitted.current = true;
+    const secs = Math.max(1, Math.round((Date.now() - t0.current) / 1000));
+    const xp = Math.max(15, 60 - secs - mistakes * 4);
+    setTime(secs); setFinished(true);
+    if (!best["match"] || secs < best["match"]) setNewBest(true);
+    setBest("match", secs);
+    submitResult("match", PAIRS - Math.min(mistakes, PAIRS), PAIRS, xp);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [done]);
+
   const check = (l: string, r: string) => {
     if (l === r) {
       setFlash({ ids: [l], kind: "good" });
       setTimeout(() => {
-        setDone((d) => {
-          const nd = new Set(d); nd.add(l);
-          if (nd.size === PAIRS) {
-            const secs = Math.max(1, Math.round((Date.now() - t0.current) / 1000));
-            const xp = Math.max(15, 60 - secs - mistakes * 4);
-            setTime(secs); setFinished(true);
-            if (!best["match"] || secs < best["match"]) setNewBest(true);
-            setBest("match", secs);
-            submitResult("match", PAIRS - Math.min(mistakes, PAIRS), PAIRS, xp);
-          }
-          return nd;
-        });
+        setDone((d) => new Set(d).add(l)); // pure updater: no side effects in here
         setFlash(null);
       }, 350);
     } else {

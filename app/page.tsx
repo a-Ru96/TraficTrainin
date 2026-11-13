@@ -5,10 +5,10 @@ import { Sign } from "@/components/Sign";
 import { ALL_CARDS } from "@/lib/deck";
 
 const MODES = [
-  { href: "/kartlar", n: "01", title: "Flashcards", text: "Flip, self-assess, repeat. Cards you miss come back until they stick." },
+  { href: "/cards", n: "01", title: "Flashcards", text: "Flip, self-assess, repeat. Cards you miss come back until they stick." },
   { href: "/quiz", n: "02", title: "Quick quiz", text: "Ten questions per round with instant explanations and combo XP." },
-  { href: "/eslestir", n: "03", title: "Match up", text: "Pair signs with their meanings against the clock." },
-  { href: "/guvenlik", n: "04", title: "Safety facts", text: "Stopping distances, alcohol limits, seat belts and more." },
+  { href: "/match", n: "03", title: "Match up", text: "Pair signs with their meanings against the clock." },
+  { href: "/safety", n: "04", title: "Safety facts", text: "Stopping distances, alcohol limits, seat belts and more." },
 ];
 
 const BOARD = ["stop", "speed30", "roundabout-w", "giveway", "nsl", "parking"];
@@ -25,7 +25,7 @@ export default function Home() {
           <p className="lead">Flashcards, quizzes and quick games built for short study sessions. No account needed. Open it and start.</p>
           <div className="row">
             <Link href="/quiz" className="btn btn-lg">Start a quiz</Link>
-            <Link href="/kartlar" className="btn btn-lg btn-ghost">Study flashcards</Link>
+            <Link href="/cards" className="btn btn-lg btn-ghost">Study flashcards</Link>
           </div>
         </div>
         <div className="sign-board" aria-hidden>
@@ -59,7 +59,7 @@ export default function Home() {
             <h3 style={{ marginBottom: 4 }}>You&apos;re studying as a guest</h3>
             <p className="muted" style={{ margin: 0, fontSize: ".92rem" }}>Progress is saved in this browser. Create an account to sync across devices and join the leaderboard.</p>
           </div>
-          <Link href="/giris" className="btn btn-ghost">Log in or sign up</Link>
+          <Link href="/login" className="btn btn-ghost">Log in or sign up</Link>
         </section>
       )}
 

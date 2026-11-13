@@ -21,7 +21,8 @@ export default function Quiz() {
   const [missed, setMissed] = useState<Question[]>([]);
 
   useEffect(() => {
-    const k = new URLSearchParams(location.search).get("kat") as CatKey | null;
+    const q = new URLSearchParams(location.search);
+    const k = (q.get("cat") ?? q.get("kat")) as CatKey | null;
     if (k) setCat(k);
   }, []);
 

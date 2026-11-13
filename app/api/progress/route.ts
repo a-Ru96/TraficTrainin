@@ -5,6 +5,8 @@ import { ensureSchema, getSql, getSnapshot, hasDb } from "@/lib/db";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+const DAILY_XP_CAP = 3000; // far above any realistic day of studying
+
 export async function POST(req: Request) {
   if (!hasDb()) return NextResponse.json({ error: "db" }, { status: 503 });
   const uid = await getUserId();
@@ -17,7 +19,13 @@ export async function POST(req: Request) {
     const sql = getSql();
     const merge = body.merge === true; // when moving guest data into the account
     const maxGain = merge ? 20000 : 300;
-    const gain = Math.max(0, Math.min(maxGain, Math.floor(Number(body.xp) || 0)));
+    const requested = Math.max(0, Math.min(maxGain, Math.floor(Number(body.xp) || 0)));
+    // Server-side daily cap, so a forged request can't inflate the leaderboard.
+    let gain = requested;
+    if (!merge && requested > 0) {
+      const t = (await sql`SELECT COALESCE(SUM(xp), 0)::int AS s FROM xp_log WHERE user_id = ${uid} AND day = CURRENT_DATE`) as Record<string, any>[];
+      gain = Math.max(0, Math.min(requested, DAILY_XP_CAP - Number(t[0]?.s ?? 0)));
+    }
 
     await sql`INSERT INTO user_stats (user_id) VALUES (${uid}) ON CONFLICT DO NOTHING`;
     await sql`UPDATE user_stats SET

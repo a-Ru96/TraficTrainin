@@ -21,6 +21,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AppProvider>
           <Nav />
           <main className="wrap">{children}</main>
+          <footer className="foot">
+            Roadly is an independent study aid, not an official DVSA or government service. Content follows the UK Highway Code
+            (Open Government Licence v3.0). Traffic sign artwork is Crown copyright (Department for Transport) or in the public domain.
+          </footer>
         </AppProvider>
       </body>
     </html>

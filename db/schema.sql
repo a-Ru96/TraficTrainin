@@ -34,3 +34,8 @@ CREATE TABLE IF NOT EXISTS quiz_results (
   total INT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+CREATE TABLE IF NOT EXISTS login_attempts (
+  key TEXT NOT NULL,
+  at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS login_attempts_key_at ON login_attempts (key, at);

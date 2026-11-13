@@ -1,6 +1,6 @@
 :root {
   --bg: #0a0d14; --s1: #10141e; --s2: #171c29; --s3: #1f2536; --line: #252c3f;
-  --text: #e8ecf4; --muted: #8b94a8; --faint: #5d667b;
+  --text: #e8ecf4; --muted: #8b94a8; --faint: #7d869b;
   --accent: #6d8cff; --accent-ink: #0a0d14; --ok: #3ddc97; --bad: #ff6b6b; --warn: #f5b94a;
   --r: 14px;
 }
@@ -200,6 +200,7 @@ kbd { font: inherit; font-size: .72rem; opacity: .7; border: 1px solid currentCo
 .lb-row .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lb-row .xp { color: var(--text); font-weight: 600; }
 
+.foot { max-width: 1040px; margin: -70px auto 0; padding: 0 20px 110px; font-size: .76rem; color: var(--faint); line-height: 1.6; }
 .page-head { margin: 4px 0 18px; }
 .page-head h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin-bottom: 6px; }
 .spin { display: inline-block; width: 16px; height: 16px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin .7s linear infinite; }

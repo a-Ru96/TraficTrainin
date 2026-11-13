@@ -11,8 +11,8 @@ export default function Safety() {
         <p className="muted">As important as the signs: key figures and rules from the Highway Code. Read them, then test yourself.</p>
       </div>
       <div className="row" style={{ marginBottom: 22 }}>
-        <Link href="/quiz?kat=safety" className="btn">Take the safety quiz</Link>
-        <Link href="/kartlar?kat=safety" className="btn btn-ghost">Study as flashcards</Link>
+        <Link href="/quiz?cat=safety" className="btn">Take the safety quiz</Link>
+        <Link href="/cards?cat=safety" className="btn btn-ghost">Study as flashcards</Link>
       </div>
       <div className="fact-list">
         {FACTS.map((f, i) => (

@@ -14,7 +14,7 @@ export async function POST(req: Request) {
   const nickname = String(body.nickname || "").trim();
   const password = String(body.password || "");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return NextResponse.json({ error: "Enter a valid email." }, { status: 400 });
-  if (nickname.length < 2 || nickname.length > 20) return NextResponse.json({ error: "Nickname must be 2-20 characters." }, { status: 400 });
+  if (!/^[\p{L}\p{N} ._-]{2,20}$/u.test(nickname)) return NextResponse.json({ error: "Nickname must be 2-20 characters: letters, numbers, spaces, . _ -" }, { status: 400 });
   if (password.length < 6 || password.length > 100) return NextResponse.json({ error: "Password must be at least 6 characters." }, { status: 400 });
 
   try {

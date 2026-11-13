@@ -34,7 +34,7 @@ Tables are created automatically on first use (`lib/db.ts`). Reference schema: `
 2. Push the repo to GitHub and **Import** it in Vercel (framework: Next.js, no settings needed).
 3. Vercel → Settings → Environment Variables:
    - `DATABASE_URL` = the Neon connection string
-   - `AUTH_SECRET` = output of `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
+   - `AUTH_SECRET` (required, at least 16 characters; sessions refuse to work in production without it) = output of `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
 4. Deploy. (Vercel's Neon integration can add `DATABASE_URL` for you.)
 
 ## Adding content
