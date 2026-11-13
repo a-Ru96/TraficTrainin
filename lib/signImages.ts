@@ -123,4 +123,6 @@ export const SIGN_IMAGES = new Set<string>([
   "dash-towing",
   "dash-tyre-pressure",
   "motorway",
+  "aheadonly",
+  "nsl",
 ]);

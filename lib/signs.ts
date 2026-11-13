@@ -121,10 +121,10 @@ export const SIGNS: SignDef[] = [
     icon: `<path d="M33 33 L67 67 M67 33 L33 67" stroke="#e11d2e" stroke-width="9"/>` },
   { id: "nowaiting", cat: "prohibit", frame: "clearway", en: "No waiting",
     tip: "You may stop briefly to drop off or pick up, but not wait.",
-    icon: `<path d="M30 70 L70 30" stroke="#e11d2e" stroke-width="9"/>` },
+    icon: `<path d="M30 30 L70 70" stroke="#e11d2e" stroke-width="9"/>` },
 
   // ---------- HIZ ----------
-  ...[20, 30, 40, 50, 60, 70].map<SignDef>((n) => ({
+  ...[20, 30, 40, 50, 60].map<SignDef>((n) => ({
     id: `speed${n}`, cat: "speed", frame: "prohibit", en: `${n} mph speed limit`,
     tip: `Don't exceed ${n} mph (about ${Math.round(n * 1.609)} km/h).`,
     icon: speed(n),
@@ -157,9 +157,6 @@ export const SIGNS: SignDef[] = [
   { id: "parking", cat: "info", frame: "rect", en: "Parking place",
     tip: "You can park here.",
     icon: `<text x="50" y="68" font-size="46" font-weight="800" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif">P</text>` },
-  { id: "hospital", cat: "info", frame: "rect", en: "Hospital ahead",
-    tip: "Watch out for ambulances.",
-    icon: `<rect x="30" y="26" width="40" height="48" rx="3" fill="#fff"/><text x="50" y="62" font-size="34" font-weight="800" text-anchor="middle" fill="#1d4ed8" font-family="Arial, sans-serif">H</text>` },
   { id: "nothrough", cat: "info", frame: "rect", en: "No through road",
     tip: "Dead end: no way through.",
     icon: `<rect x="30" y="28" width="40" height="10" fill="#d4182a"/><rect x="45" y="38" width="10" height="34" fill="#fff"/>` },
