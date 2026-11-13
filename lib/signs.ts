@@ -163,10 +163,10 @@ export const SIGNS: SignDef[] = [
   { id: "nothrough", cat: "info", frame: "rect", en: "No through road",
     tip: "Dead end: no way through.",
     icon: `<rect x="30" y="28" width="40" height="10" fill="#d4182a"/><rect x="45" y="38" width="10" height="34" fill="#fff"/>` },
-  { id: "motorway", cat: "info", frame: "rect", en: "Motorway",
-    tip: "No cyclists, pedestrians or slow vehicles on the motorway.",
+  { id: "motorway", cat: "info", frame: "rect", en: "Motorway (start of motorway regulations)",
+    tip: "Motorway rules apply: no cyclists, pedestrians or slow vehicles, no U-turns and no reversing.",
     icon: `<path d="M24 68 Q50 28 76 68" stroke="#fff" stroke-width="5" fill="none"/><path d="M36 68 L46 48 M64 68 L54 48" stroke="#fff" stroke-width="4"/>` },
-  ];
+];
 
 // Signs that only exist as images (no SVG fallback needed).
 const EXTRA: SignDef[] = [
