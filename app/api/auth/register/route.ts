@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { ensureSchema, getSql, hasDb, getSnapshot } from "@/lib/db";
 import { createSession } from "@/lib/auth";
+import { isAllowedNickname } from "@/lib/moderation";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,7 +16,8 @@ export async function POST(req: Request) {
   const password = String(body.password || "");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return NextResponse.json({ error: "Enter a valid email." }, { status: 400 });
   if (!/^[\p{L}\p{N} ._-]{2,20}$/u.test(nickname)) return NextResponse.json({ error: "Nickname must be 2-20 characters: letters, numbers, spaces, . _ -" }, { status: 400 });
-  if (password.length < 6 || password.length > 100) return NextResponse.json({ error: "Password must be at least 6 characters." }, { status: 400 });
+  if (!isAllowedNickname(nickname)) return NextResponse.json({ error: "Please choose a different nickname." }, { status: 400 });
+  if (password.length < 8 || password.length > 100) return NextResponse.json({ error: "Password must be at least 8 characters." }, { status: 400 });
 
   try {
     await ensureSchema();

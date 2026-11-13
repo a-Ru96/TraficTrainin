@@ -33,6 +33,9 @@ export function ensureSchema(): Promise<void> {
       await sql`CREATE TABLE IF NOT EXISTS login_attempts (
         key TEXT NOT NULL, at TIMESTAMPTZ NOT NULL DEFAULT now())`;
       await sql`CREATE INDEX IF NOT EXISTS login_attempts_key_at ON login_attempts (key, at)`;
+      await sql`CREATE TABLE IF NOT EXISTS password_resets (
+        token_hash TEXT PRIMARY KEY, user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        expires_at TIMESTAMPTZ NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT now())`;
       await sql`CREATE TABLE IF NOT EXISTS quiz_results (
         id SERIAL PRIMARY KEY, user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
         mode TEXT NOT NULL, score INT NOT NULL, total INT NOT NULL,

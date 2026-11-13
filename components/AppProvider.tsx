@@ -27,6 +27,7 @@ interface Ctx {
   login: (email: string, password: string) => Promise<string | null>;
   register: (email: string, nickname: string, password: string) => Promise<string | null>;
   logout: () => Promise<void>;
+  deleteAccount: (password: string) => Promise<string | null>;
 }
 
 const AppCtx = createContext<Ctx | null>(null);
@@ -168,11 +169,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setState(EMPTY);
   }, []);
 
+  const deleteAccount = useCallback(async (password: string) => {
+    try {
+      const res = await fetch("/api/account", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password }) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) return (data.error as string) || "Could not delete the account.";
+      try { localStorage.removeItem(KEY); } catch {}
+      setUser(null);
+      setState(EMPTY);
+      return null;
+    } catch { return "Connection error."; }
+  }, []);
+
   const { level, into } = levelOf(state.xp);
   const value: Ctx = {
     ready, user, dbOn, xp: state.xp, streak: state.streak, level, levelInto: into,
     known: state.known, best: state.best, pops,
-    addXp, markCard, submitResult, setBest, login, register, logout,
+    addXp, markCard, submitResult, setBest, login, register, logout, deleteAccount,
   };
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>;
 }

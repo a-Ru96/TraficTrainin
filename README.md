@@ -53,3 +53,20 @@ To add an image: drop `<id>.jpg` into `public/signs/` and add the id to `lib/sig
 
 `lib/dashboard.ts` holds 42 dashboard warning lights (name, colour, tip); images are `public/signs/dash-*.jpg`, cropped from a 7x6 grid.
 Quiz question types (`lib/deck.ts`): sign to name, name to sign, sign to "what should you do", sign to group, true/false, light colour urgency, plus fact questions from `lib/facts.ts` and `lib/questions.ts`.
+
+## Accounts, password reset and legal pages
+
+- **Forgot password** emails a one-hour, single-use link (only a hash of the token is stored). It needs an email provider; the code uses the [Resend](https://resend.com) HTTP API. Set `RESEND_API_KEY` and `EMAIL_FROM` (a sender on a domain you verified in Resend). Without them the page tells users that reset isn't set up yet, and everything else keeps working.
+- Reset links use `SITE_URL` (or Vercel's `VERCEL_PROJECT_PRODUCTION_URL`), never the request's Host header.
+- **Delete my account** (account page) removes the user and all their data immediately.
+- `/legal` holds privacy, terms and credits. Set `NEXT_PUBLIC_CONTACT_EMAIL` so people can reach you for data requests and image removal (it needs a redeploy to take effect). Review the text for your situation: it is a plain-English template, not legal advice.
+- `GET /api/health` returns 200 when the app (and database, if configured) is healthy and 503 when the database fails. Point an uptime monitor (UptimeRobot, Better Stack, ...) at it.
+- Fonts are self-hosted (`next/font`), so visitors' browsers make no request to Google.
+
+## Tests
+
+```bash
+npm test
+```
+
+Runs the content checks (unique ids, images exist, every quiz question well-formed over thousands of generated rounds), unit tests (nickname filter, tokens, levels) and end-to-end tests of the real API routes against an in-process Postgres (register, login throttle, sessions, XP cap, password reset, account deletion, leaderboard). No database or network is needed.

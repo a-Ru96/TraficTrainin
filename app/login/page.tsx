@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useApp } from "@/components/AppProvider";
 
 export default function Auth() {
-  const { user, dbOn, login, register, logout, xp, streak, level, ready } = useApp();
+  const { user, dbOn, login, register, logout, deleteAccount, xp, streak, level, ready } = useApp();
   const router = useRouter();
   const [tab, setTab] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
@@ -13,6 +13,9 @@ export default function Auth() {
   const [pw, setPw] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [delPw, setDelPw] = useState("");
+  const [delErr, setDelErr] = useState<string | null>(null);
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -20,6 +23,14 @@ export default function Auth() {
     const r = tab === "login" ? await login(email, pw) : await register(email, nick, pw);
     setBusy(false);
     if (r) setErr(r); else router.push("/");
+  };
+
+  const remove = async (e: FormEvent) => {
+    e.preventDefault();
+    setDelErr(null); setBusy(true);
+    const r = await deleteAccount(delPw);
+    setBusy(false);
+    if (r) setDelErr(r); else router.push("/");
   };
 
   if (!ready) return null;
@@ -34,6 +45,26 @@ export default function Auth() {
           <Link href="/quiz" className="btn">Keep studying</Link>
           <button className="btn btn-ghost" onClick={() => logout()}>Log out</button>
         </div>
+
+        <div className="divider">account</div>
+        {!confirming ? (
+          <button className="btn btn-sm btn-bad" onClick={() => setConfirming(true)}>Delete my account</button>
+        ) : (
+          <form onSubmit={remove} style={{ textAlign: "left" }}>
+            <p className="muted" style={{ fontSize: ".88rem" }}>
+              This permanently deletes your account, progress, XP and leaderboard entry. It can&apos;t be undone.
+              Enter your password to confirm.
+            </p>
+            {delErr && <div className="err" role="alert">{delErr}</div>}
+            <label className="field">Password
+              <input type="password" value={delPw} onChange={(e) => setDelPw(e.target.value)} required autoComplete="current-password" />
+            </label>
+            <div className="row">
+              <button className="btn btn-sm btn-bad" disabled={busy}>{busy ? <span className="spin" /> : "Delete permanently"}</button>
+              <button type="button" className="btn btn-sm btn-ghost" onClick={() => { setConfirming(false); setDelPw(""); setDelErr(null); }}>Cancel</button>
+            </div>
+          </form>
+        )}
       </div>
     );
   }
@@ -62,12 +93,22 @@ export default function Auth() {
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" placeholder="you@university.ac.uk" />
             </label>
             <label className="field">Password
-              <input type="password" value={pw} onChange={(e) => setPw(e.target.value)} required minLength={6}
-                autoComplete={tab === "login" ? "current-password" : "new-password"} placeholder="At least 6 characters" />
+              <input type="password" value={pw} onChange={(e) => setPw(e.target.value)} required minLength={tab === "register" ? 8 : 1}
+                autoComplete={tab === "login" ? "current-password" : "new-password"} placeholder={tab === "register" ? "At least 8 characters" : ""} />
             </label>
             <button className="btn btn-lg" style={{ width: "100%" }} disabled={busy}>
               {busy ? <span className="spin" /> : tab === "login" ? "Log in" : "Create account"}
             </button>
+            {tab === "login" && (
+              <p style={{ textAlign: "center", margin: "14px 0 0", fontSize: ".86rem" }}>
+                <Link href="/forgot" className="muted" style={{ textDecoration: "underline" }}>Forgot your password?</Link>
+              </p>
+            )}
+            {tab === "register" && (
+              <p className="muted" style={{ fontSize: ".78rem", textAlign: "center", margin: "12px 0 0" }}>
+                By signing up you agree to the <Link href="/legal" style={{ textDecoration: "underline" }}>terms and privacy policy</Link>.
+              </p>
+            )}
           </form>
           <div className="divider">or</div>
         </>

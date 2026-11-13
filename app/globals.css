@@ -8,13 +8,13 @@
 html { -webkit-tap-highlight-color: transparent; }
 body {
   margin: 0; color: var(--text); min-height: 100vh; overflow-x: hidden; line-height: 1.55;
-  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 16px;
+  font-family: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 16px;
   background: radial-gradient(900px 500px at 85% -10%, rgba(109,140,255,.16), transparent 60%),
               radial-gradient(700px 400px at -10% 10%, rgba(61,220,151,.07), transparent 60%), var(--bg);
   background-attachment: fixed;
 }
 a { color: inherit; text-decoration: none; }
-h1, h2, h3 { font-family: "Space Grotesk", "Inter", sans-serif; line-height: 1.12; margin: 0 0 .45em; font-weight: 700; letter-spacing: -.02em; }
+h1, h2, h3 { font-family: var(--font-grotesk), var(--font-inter), sans-serif; line-height: 1.12; margin: 0 0 .45em; font-weight: 700; letter-spacing: -.02em; }
 h1 { font-size: clamp(2.2rem, 5.5vw, 3.6rem); }
 h2 { font-size: clamp(1.4rem, 3.5vw, 1.9rem); }
 h3 { font-size: 1.1rem; }
@@ -33,7 +33,7 @@ svg { max-width: 100%; height: auto; }
 /* top bar */
 .top { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 18px; padding: 12px 20px;
   background: rgba(10,13,20,.8); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); flex-wrap: wrap; }
-.logo { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; letter-spacing: -.02em; }
+.logo { font-family: var(--font-grotesk), sans-serif; font-weight: 700; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; letter-spacing: -.02em; }
 .logo .mark { width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg, var(--accent), #a78bfa); position: relative; }
 .logo .mark::after { content: ""; position: absolute; inset: 6px; border-radius: 50%; background: var(--bg); }
 .logo b { color: var(--accent); font-weight: 700; }
@@ -100,12 +100,12 @@ kbd { font: inherit; font-size: .72rem; opacity: .7; border: 1px solid currentCo
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
 .quick { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin: 36px 0 8px; }
 .stat { background: var(--s1); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px; }
-.stat b { display: block; font-family: "Space Grotesk", sans-serif; font-size: 1.7rem; color: var(--text); }
+.stat b { display: block; font-family: var(--font-grotesk), sans-serif; font-size: 1.7rem; color: var(--text); }
 .stat span { font-size: .82rem; color: var(--muted); }
 .modes { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); margin: 22px 0 28px; }
 .mode { position: relative; display: block; background: var(--s1); border: 1px solid var(--line); border-radius: var(--r); padding: 22px; transition: transform .2s, border-color .2s, background .2s; }
 .mode:hover { transform: translateY(-3px); border-color: var(--accent); background: var(--s2); }
-.mode .num { font-family: "Space Grotesk", sans-serif; font-size: .8rem; color: var(--accent); font-weight: 600; letter-spacing: .1em; margin-bottom: 18px; display: block; }
+.mode .num { font-family: var(--font-grotesk), sans-serif; font-size: .8rem; color: var(--accent); font-weight: 600; letter-spacing: .1em; margin-bottom: 18px; display: block; }
 .mode h3 { margin-bottom: 6px; }
 .mode p { margin: 0; color: var(--muted); font-size: .9rem; }
 .mode .arrow { position: absolute; right: 20px; top: 20px; color: var(--faint); transition: .2s; }
@@ -121,7 +121,7 @@ kbd { font: inherit; font-size: .72rem; opacity: .7; border: 1px solid currentCo
   background: var(--s1); border: 1px solid var(--line); box-shadow: 0 20px 50px -20px rgba(0,0,0,.6); }
 .face.back { transform: rotateY(180deg); background: linear-gradient(160deg, var(--s2), var(--s1)); border-color: rgba(109,140,255,.45); }
 .face .hint { position: absolute; bottom: 16px; font-size: .74rem; color: var(--faint); }
-.face .term { font-family: "Space Grotesk", sans-serif; font-size: 1.6rem; font-weight: 700; line-height: 1.2; }
+.face .term { font-family: var(--font-grotesk), sans-serif; font-size: 1.6rem; font-weight: 700; line-height: 1.2; }
 .face .tag { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
 .face .tip { background: var(--s3); padding: 10px 14px; border-radius: 10px; font-size: .9rem; color: var(--muted); max-width: 100%; }
 .face .fact-text { font-size: 1.02rem; color: var(--text); }
@@ -151,7 +151,7 @@ kbd { font: inherit; font-size: .72rem; opacity: .7; border: 1px solid currentCo
 @keyframes shake { 25%,75% { transform: translateX(-5px); } 50% { transform: translateX(5px); } }
 .explain { margin-top: 18px; padding: 14px 16px; border-radius: 10px; background: var(--s2); text-align: left; animation: slidein .25s; font-size: .93rem; }
 .explain.good { border-left: 3px solid var(--ok); } .explain.nope { border-left: 3px solid var(--bad); }
-.score-big { font-family: "Space Grotesk", sans-serif; font-size: clamp(3.2rem, 11vw, 5rem); font-weight: 700; color: var(--accent); line-height: 1; margin: 6px 0 10px; }
+.score-big { font-family: var(--font-grotesk), sans-serif; font-size: clamp(3.2rem, 11vw, 5rem); font-weight: 700; color: var(--accent); line-height: 1; margin: 6px 0 10px; }
 .miss { display: grid; gap: 8px; text-align: left; margin-top: 18px; }
 .miss > div { background: var(--s2); border-radius: 10px; padding: 10px 14px; font-size: .88rem; color: var(--muted); }
 
@@ -170,7 +170,7 @@ kbd { font: inherit; font-size: .72rem; opacity: .7; border: 1px solid currentCo
 .fact-list { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
 .fact { background: var(--s1); border: 1px solid var(--line); padding: 20px; border-radius: var(--r); transition: border-color .2s; }
 .fact:hover { border-color: var(--accent); }
-.fact .n { font-family: "Space Grotesk", sans-serif; font-size: .78rem; font-weight: 600; color: var(--accent); letter-spacing: .1em; display: block; margin-bottom: 10px; }
+.fact .n { font-family: var(--font-grotesk), sans-serif; font-size: .78rem; font-weight: 600; color: var(--accent); letter-spacing: .1em; display: block; margin-bottom: 10px; }
 .fact h3 { margin: 0 0 6px; font-size: 1.05rem; }
 .fact p { margin: 0; color: var(--muted); font-size: .92rem; }
 
@@ -195,12 +195,19 @@ kbd { font: inherit; font-size: .72rem; opacity: .7; border: 1px solid currentCo
 .lb { display: grid; gap: 8px; }
 .lb-row { display: flex; align-items: center; gap: 14px; background: var(--s1); border: 1px solid var(--line); padding: 13px 18px; border-radius: 12px; font-weight: 500; }
 .lb-row.me { border-color: var(--accent); background: rgba(109,140,255,.08); }
-.lb-row .rank { width: 32px; font-family: "Space Grotesk", sans-serif; font-weight: 700; color: var(--faint); }
+.lb-row .rank { width: 32px; font-family: var(--font-grotesk), sans-serif; font-weight: 700; color: var(--faint); }
 .lb-row:nth-child(-n+3) .rank { color: var(--accent); }
 .lb-row .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lb-row .xp { color: var(--text); font-weight: 600; }
 
 .foot { max-width: 1040px; margin: -70px auto 0; padding: 0 20px 110px; font-size: .76rem; color: var(--faint); line-height: 1.6; }
+.prose { max-width: 720px; }
+.prose h2 { font-size: 1.15rem; margin: 1.8em 0 .5em; }
+.prose p, .prose li { color: var(--muted); font-size: .95rem; }
+.prose li { margin-bottom: .4em; }
+.prose b { color: var(--text); font-weight: 600; }
+.prose a { color: var(--accent); text-decoration: underline; }
+.foot a { text-decoration: underline; }
 .page-head { margin: 4px 0 18px; }
 .page-head h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin-bottom: 6px; }
 .spin { display: inline-block; width: 16px; height: 16px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin .7s linear infinite; }

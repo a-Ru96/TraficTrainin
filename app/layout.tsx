@@ -1,7 +1,13 @@
 import type { Metadata, Viewport } from "next";
+import Link from "next/link";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/components/AppProvider";
 import { Nav } from "@/components/Nav";
+
+// Fonts are downloaded at build time and served from our own domain (no request to Google by visitors).
+const inter = Inter({ subsets: ["latin", "latin-ext"], weight: ["400", "500", "600"], variable: "--font-inter", display: "swap" });
+const grotesk = Space_Grotesk({ subsets: ["latin", "latin-ext"], weight: ["500", "700"], variable: "--font-grotesk", display: "swap" });
 
 export const metadata: Metadata = {
   title: "Roadly · UK road signs quiz",
@@ -11,19 +17,15 @@ export const viewport: Viewport = { themeColor: "#0a0d14", width: "device-width"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
-      </head>
+    <html lang="en" className={`${inter.variable} ${grotesk.variable}`}>
       <body>
         <AppProvider>
           <Nav />
           <main className="wrap">{children}</main>
           <footer className="foot">
             Roadly is an independent study aid, not an official DVSA or government service. Content follows the UK Highway Code
-            (Open Government Licence v3.0). Traffic sign artwork is Crown copyright (Department for Transport) or in the public domain.
+            (Open Government Licence v3.0). Traffic sign artwork is Crown copyright (Department for Transport) or in the public domain.{" "}
+            <Link href="/legal">Privacy, terms &amp; credits</Link>
           </footer>
         </AppProvider>
       </body>
