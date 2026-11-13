@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { FACTS } from "@/lib/facts";
 
-export const metadata = { title: "Safety facts · LevhaLab" };
+export const metadata = { title: "Safety facts · Roadly" };
 
 export default function Safety() {
   return (

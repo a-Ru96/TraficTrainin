@@ -4,7 +4,7 @@ import { AppProvider } from "@/components/AppProvider";
 import { Nav } from "@/components/Nav";
 
 export const metadata: Metadata = {
-  title: "LevhaLab · UK road signs quiz",
+  title: "Roadly · UK road signs quiz",
   description: "Learn UK road signs and road safety with flashcards, quizzes and games. Jump in as a guest.",
 };
 export const viewport: Viewport = { themeColor: "#0a0d14", width: "device-width", initialScale: 1 };
