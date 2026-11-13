@@ -5,11 +5,16 @@ export type Frame =
   | "warn" | "giveway" | "stop" | "prohibit" | "mandatory"
   | "rect" | "natl" | "noentry" | "clearway";
 
+import { SIGN_IMAGES } from "./signImages";
+
 export interface SignDef {
   id: string;
   cat: Cat;
-  frame: Frame;
-  icon: string; // inner SVG markup
+  /** SVG fallback, used only when the sign has no image in /public/signs */
+  frame?: Frame;
+  icon?: string; // inner SVG markup
+  /** set automatically from SIGN_IMAGES */
+  img?: string;
   en: string;
   tip: string;
 }
@@ -161,5 +166,62 @@ export const SIGNS: SignDef[] = [
     tip: "Pedestrians have priority at the crossing.",
     icon: `<polygon points="50,24 72,72 28,72" fill="#fff"/><circle cx="50" cy="44" r="3.5" fill="${K}"/><path d="M50 49 L52 59 L46 67 M52 59 L57 66 M50 51 L57 56" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>` },
 ];
+
+// Signs that only exist as images (no SVG fallback needed).
+const EXTRA: SignDef[] = [
+  // warning
+  { id: "bend-right", cat: "warning", en: "Bend to the right", tip: "Slow down before the bend, not in it." },
+  { id: "bend-left", cat: "warning", en: "Bend to the left", tip: "Slow down before the bend, not in it." },
+  { id: "steep-up", cat: "warning", en: "Steep hill upwards", tip: "Select a lower gear early and keep your momentum." },
+  { id: "hump-bridge", cat: "warning", en: "Hump-back bridge", tip: "You can't see what's on the other side. Slow down." },
+  { id: "tunnel", cat: "warning", en: "Tunnel ahead", tip: "Switch on dipped headlights and keep your distance." },
+  { id: "swing-bridge", cat: "warning", en: "Opening or swing bridge", tip: "The bridge may be raised. Be ready to stop." },
+  { id: "cattle", cat: "warning", en: "Cattle", tip: "Animals may be on the road. Slow down and give them space." },
+  { id: "sheep", cat: "warning", en: "Sheep", tip: "Animals may be on the road. Slow down and give them space." },
+  { id: "wild-horses", cat: "warning", en: "Wild horses or ponies", tip: "Animals may be on the road. Slow down and give them space." },
+  { id: "horse-riders", cat: "warning", en: "Horse riders", tip: "Pass wide and slow, and don't sound your horn." },
+  { id: "deer", cat: "warning", en: "Wild animals (deer)", tip: "Most likely at dawn and dusk. Slow down." },
+  { id: "cattle-grid", cat: "warning", en: "Cattle grid", tip: "A grid in the road surface. Animals may be loose beyond it." },
+  { id: "farm", cat: "warning", en: "Agricultural vehicles", tip: "Slow-moving farm vehicles may be on the road." },
+  { id: "ford", cat: "warning", en: "Ford", tip: "Test your brakes after crossing the water." },
+  { id: "quayside", cat: "warning", en: "Quayside or river bank", tip: "The road ends at open water. Take care." },
+  { id: "aircraft", cat: "warning", en: "Low-flying aircraft", tip: "Aircraft may be noisy and low. Stay calm and in control." },
+  { id: "rocks", cat: "warning", en: "Falling or fallen rocks", tip: "Watch for debris on the road and don't stop below the slope." },
+  { id: "crosswind", cat: "warning", en: "Side winds", tip: "Gusts can push your vehicle. Keep a firm grip on the wheel." },
+  { id: "queues", cat: "warning", en: "Queues likely ahead", tip: "Slow down early and use hazard lights if the queue is sudden." },
+  { id: "humps", cat: "warning", en: "Road humps", tip: "Traffic-calming humps ahead. Slow down." },
+  { id: "cyclists", cat: "warning", en: "Cyclists likely", tip: "Cyclists may be on or crossing the road." },
+  { id: "level-gate", cat: "warning", en: "Level crossing with gate or barrier", tip: "Stop when the lights flash or barriers lower. Never zigzag round." },
+  { id: "level-open", cat: "warning", en: "Level crossing without barrier", tip: "Look both ways and listen for trains before you cross." },
+  // rules
+  { id: "giveprio", cat: "prohibit", en: "Give priority to oncoming vehicles", tip: "The red arrow is for you: let the oncoming traffic through first." },
+  { id: "priority", cat: "prohibit", en: "Priority over oncoming vehicles", tip: "The white arrow is for you: you have priority on this narrow section." },
+  { id: "novehicles", cat: "prohibit", en: "No vehicles", tip: "All vehicles are prohibited, including cycles (push them)." },
+  { id: "nomotor", cat: "prohibit", en: "No motor vehicles", tip: "Cars and motorcycles aren't allowed." },
+  { id: "nomoto", cat: "prohibit", en: "No motorcycles", tip: "Motorcycles aren't allowed." },
+  { id: "hgv", cat: "prohibit", en: "No vehicles over 7.5 tonnes", tip: "A weight limit for goods vehicles, except for loading or access." },
+  { id: "nohorse", cat: "prohibit", en: "No horse-drawn vehicles", tip: "Horse-drawn vehicles aren't allowed." },
+  { id: "noridden", cat: "prohibit", en: "No ridden horses", tip: "Riders on horseback aren't allowed." },
+  { id: "nocaravan", cat: "prohibit", en: "No towed caravans", tip: "Vehicles towing caravans aren't allowed." },
+  { id: "nopeds", cat: "prohibit", en: "No pedestrians", tip: "Pedestrians aren't allowed on this road." },
+  { id: "nocycle", cat: "prohibit", en: "No cycling", tip: "Cycles aren't allowed." },
+  { id: "nobus", cat: "prohibit", en: "No buses", tip: "Buses aren't allowed." },
+  // mandatory
+  { id: "turn-left", cat: "mandatory", en: "Turn left", tip: "You must turn left here." },
+  { id: "turn-right", cat: "mandatory", en: "Turn right", tip: "You must turn right here." },
+  { id: "pass-either", cat: "mandatory", en: "Pass either side", tip: "You may pass the island on either side." },
+  { id: "cycles-only", cat: "mandatory", en: "Route for pedal cycles only", tip: "Only cyclists may use this route." },
+  { id: "shared", cat: "mandatory", en: "Shared route for cyclists and pedestrians", tip: "Both use the same space. Cyclists should give way to pedestrians." },
+  { id: "segregated", cat: "mandatory", en: "Segregated cycle and pedestrian route", tip: "Keep to your own side of the line." },
+  // speed
+  { id: "end-min30", cat: "speed", en: "End of minimum speed 30 mph", tip: "The minimum speed requirement stops here." },
+  { id: "zone20", cat: "speed", en: "20 mph zone", tip: "A whole area with a 20 mph limit, often with humps." },
+  { id: "camera", cat: "speed", en: "Speed camera", tip: "Speed limits are enforced by cameras here." },
+  // info
+  { id: "cycle-route", cat: "info", en: "Recommended cycle route", tip: "A signed route that's suitable for cyclists." },
+  { id: "homezone", cat: "info", en: "Home zone", tip: "Residential street. Drive slowly, children may be playing." },
+];
+SIGNS.push(...EXTRA);
+for (const s of SIGNS) if (SIGN_IMAGES.has(s.id)) s.img = `/signs/${s.id}.jpg`;
 
 export const SIGN_MAP: Record<string, SignDef> = Object.fromEntries(SIGNS.map((s) => [s.id, s]));

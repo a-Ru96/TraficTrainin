@@ -95,7 +95,7 @@ export default function MatchGame() {
           <div className="m-col">
             {round.left.map((s) => (
               <button key={s.id} className={cls(s.id, selL)} disabled={done.has(s.id)} onClick={() => pickL(s.id)}>
-                <Sign id={s.id} size={68} />
+                <Sign id={s.id} size={84} />
               </button>
             ))}
           </div>

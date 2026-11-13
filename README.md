@@ -43,3 +43,8 @@ Tables are created automatically on first use (`lib/db.ts`). Reference schema: `
 - Safety fact + quiz question: `lib/facts.ts`.
 
 > Content follows the UK Highway Code; signs in other Commonwealth countries are similar but can differ. For study only. Check current official sources for your real test.
+
+## Sign images
+
+Optimized sign images live in `public/signs/<id>.jpg` (max 360 px). `lib/signImages.ts` lists which ids have an image; signs without one fall back to the SVG drawing in `lib/signs.ts`.
+To add an image: drop `<id>.jpg` into `public/signs/` and add the id to `lib/signImages.ts`. The raw dump folder `levhalar/` is git-ignored.
