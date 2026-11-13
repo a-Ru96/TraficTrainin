@@ -66,7 +66,8 @@ export default function Home() {
       <p className="note">
         Content is based on the UK Highway Code and UK road signs. Many Commonwealth countries that drive on the left (Australia, India,
         New Zealand and others) use similar signs, but details differ by country. This is a study aid; always check current official
-        sources before your test.
+        sources before your test. Dashboard warning light symbols and meanings can differ between manufacturers, so check your
+        vehicle handbook.
       </p>
     </>
   );

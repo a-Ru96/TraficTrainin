@@ -46,7 +46,7 @@ export const FACTS: Fact[] = [
     text: "In the UK and many Commonwealth countries traffic drives on the left, and roundabouts go clockwise.",
     q: "Which side of the road does traffic use in the UK?", options: ["Right", "Left", "It depends on the road", "Either side"], a: 1 },
   { id: "limits", title: "Car speed limits",
-    text: "Built-up areas (with street lights) 30 mph, single carriageways 60 mph, dual carriageways and motorways 70 mph.",
+    text: "Built-up areas (with street lights) 30 mph in England and Scotland (20 mph in Wales), single carriageways 60 mph, dual carriageways and motorways 70 mph.",
     q: "What is the national speed limit for cars on a single carriageway?", options: ["50 mph", "60 mph", "70 mph", "40 mph"], a: 1 },
   { id: "childseat", title: "Child seats",
     text: "Children must use a suitable child car seat until they are 135 cm tall or 12 years old, whichever comes first.",
