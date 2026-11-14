@@ -3,7 +3,10 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 // End-to-end tests of the real route handlers. Neon is replaced by an in-process Postgres,
 // cookies by an in-memory jar and the email provider by a recorder.
-const h = vi.hoisted(() => ({ db: null as any, jar: new Map<string, string>(), sent: [] as { to: string; subject: string; text: string }[] }));
+const h = vi.hoisted(() => ({
+  db: null as any, jar: new Map<string, string>(), sent: [] as { to: string; subject: string; text: string }[],
+  emailOn: true, sendOk: true,
+}));
 
 vi.mock("@neondatabase/serverless", () => ({
   neon: () => async (strings: TemplateStringsArray, ...vals: any[]) => {
@@ -19,8 +22,8 @@ vi.mock("next/headers", () => ({
   }),
 }));
 vi.mock("@/lib/email", () => ({
-  emailConfigured: () => true,
-  sendEmail: async (to: string, subject: string, text: string) => { h.sent.push({ to, subject, text }); return true; },
+  emailConfigured: () => h.emailOn,
+  sendEmail: async (to: string, subject: string, text: string) => { h.sent.push({ to, subject, text }); return h.sendOk; },
 }));
 
 process.env.DATABASE_URL = "postgres://test";
@@ -32,6 +35,7 @@ beforeAll(async () => {
   h.db = new PGlite();
   routes = {
     register: (await import("@/app/api/auth/register/route")).POST,
+    verify: (await import("@/app/api/auth/verify/route")).POST,
     login: (await import("@/app/api/auth/login/route")).POST,
     logout: (await import("@/app/api/auth/logout/route")).POST,
     forgot: (await import("@/app/api/auth/forgot/route")).POST,
@@ -43,7 +47,7 @@ beforeAll(async () => {
     health: (await import("@/app/api/health/route")).GET,
   };
 });
-beforeEach(() => { h.jar.clear(); h.sent.length = 0; });
+beforeEach(() => { h.jar.clear(); h.sent.length = 0; h.emailOn = true; h.sendOk = true; });
 
 let ipCounter = 0;
 const nextIp = () => `10.0.${Math.floor(ipCounter / 250)}.${(ipCounter++ % 250) + 1}`;
@@ -54,15 +58,31 @@ const call = async (fn: any, r: Request) => { const res = await fn(r); return { 
 const PW = "correct horse 9";
 let counter = 0;
 const uniq = () => `u${++counter}`;
-async function signup(over: Partial<{ email: string; nickname: string; password: string }> = {}) {
+/** One sign-up request, nothing more. */
+async function signupRaw(over: Partial<{ email: string; nickname: string; password: string }> = {}) {
   const id = uniq();
   const email = over.email ?? `${id}@example.com`;
   const r = await call(routes.register, req("/api/auth/register", { email, nickname: over.nickname ?? `Player ${id}`, password: over.password ?? PW }));
   return { email, ...r };
 }
+const verifyToken = () => {
+  const m = h.sent.at(-1)?.text.match(/https:\/\/roadly\.test\/verify\?token=([0-9a-f]{64})/);
+  return m ? m[1] : null;
+};
+/** The normal journey: sign up, open the emailed link, log in. Leaves the user signed in; returns the login snapshot. */
+async function signup(over: Partial<{ email: string; nickname: string; password: string }> = {}) {
+  const raw = await signupRaw(over);
+  if (raw.status !== 200) return raw;
+  const token = verifyToken()!;
+  const v = await call(routes.verify, req("/api/auth/verify", { token }));
+  if (v.status !== 200) return { email: raw.email, ...v };
+  const r = await call(routes.login, req("/api/auth/login", { email: raw.email, password: over.password ?? PW }));
+  h.sent.length = 0; // tests below count the emails they trigger themselves
+  return { email: raw.email, ...r };
+}
 
 describe("register", () => {
-  it("creates an account, signs in via cookie and returns a snapshot", async () => {
+  it("after confirming the email, the account exists and logging in returns a snapshot", async () => {
     const r = await signup();
     expect(r.status).toBe(200);
     expect(r.json.user.id).toBeGreaterThan(0);
@@ -72,20 +92,116 @@ describe("register", () => {
     expect(me.json.snapshot.user.email).toBe(r.email);
   });
   it("rejects bad input", async () => {
-    expect((await signup({ password: "short" })).status).toBe(400);
-    expect((await signup({ nickname: "<script>" })).status).toBe(400);
-    expect((await signup({ nickname: "fuck" })).status).toBe(400);
-    expect((await signup({ nickname: "a" })).status).toBe(400);
-    expect((await signup({ email: "not-an-email" })).status).toBe(400);
+    expect((await signupRaw({ password: "short" })).status).toBe(400);
+    expect((await signupRaw({ nickname: "<script>" })).status).toBe(400);
+    expect((await signupRaw({ nickname: "fuck" })).status).toBe(400);
+    expect((await signupRaw({ nickname: "a" })).status).toBe(400);
+    expect((await signupRaw({ email: "not-an-email" })).status).toBe(400);
+    expect(h.sent.length).toBe(0);
   });
-  it("rejects a duplicate email with 409", async () => {
+  it("rejects a duplicate email with 409 and sends nothing", async () => {
     const a = await signup();
-    const b = await signup({ email: a.email });
+    const b = await signupRaw({ email: a.email });
     expect(b.status).toBe(409);
+    expect(h.sent.length).toBe(0);
   });
   it("allows normal nicknames incl. non-English letters", async () => {
-    expect((await signup({ nickname: "Ayşe Y." })).status).toBe(200);
-    expect((await signup({ nickname: "Scunthorpe" })).status).toBe(200);
+    expect((await signupRaw({ nickname: "Ayşe Y." })).status).toBe(200);
+    expect((await signupRaw({ nickname: "Scunthorpe" })).status).toBe(200);
+  });
+});
+
+describe("email confirmation", () => {
+  const count = async (sql: string, ...p: any[]) => (await h.db.query(sql, p)).rows[0].n as number;
+
+  it("sign-up only emails a link: no account, no session yet", async () => {
+    const r = await signupRaw();
+    expect(r.status).toBe(200);
+    expect(r.json).toEqual({ pending: true, email: r.email });
+    expect(h.jar.size).toBe(0);
+    expect(h.sent.length).toBe(1);
+    expect(h.sent[0].to).toBe(r.email);
+    expect(verifyToken()).toBeTruthy();
+    expect(await count("SELECT COUNT(*)::int AS n FROM users WHERE email = $1", r.email)).toBe(0);
+    // Not logging in before confirming.
+    expect((await call(routes.login, req("/api/auth/login", { email: r.email, password: PW }))).status).toBe(401);
+  });
+  it("stores only hashes: neither the link token nor the password is in the database as plain text", async () => {
+    const r = await signupRaw();
+    const token = verifyToken()!;
+    const row = (await h.db.query("SELECT token_hash, password_hash FROM pending_signups WHERE email = $1", [r.email])).rows[0];
+    expect(row.token_hash).not.toBe(token);
+    expect(row.token_hash).toMatch(/^[0-9a-f]{64}$/);
+    expect(row.password_hash).not.toContain(PW);
+    expect(row.password_hash).toMatch(/^\$2[aby]\$/);
+  });
+  it("the link creates the account once, with the chosen nickname and password", async () => {
+    const r = await signupRaw({ nickname: "Road Runner" });
+    const token = verifyToken()!;
+    expect((await call(routes.verify, req("/api/auth/verify", { token }))).status).toBe(200);
+    expect(await count("SELECT COUNT(*)::int AS n FROM user_stats s JOIN users u ON u.id = s.user_id WHERE u.email = $1", r.email)).toBe(1);
+    expect(await count("SELECT COUNT(*)::int AS n FROM pending_signups WHERE email = $1", r.email)).toBe(0);
+    expect((await call(routes.verify, req("/api/auth/verify", { token }))).status).toBe(400); // reuse
+    const login = await call(routes.login, req("/api/auth/login", { email: r.email, password: PW }));
+    expect(login.status).toBe(200);
+    expect(login.json.user.nickname).toBe("Road Runner");
+  });
+  it("an expired link is refused and creates nothing", async () => {
+    const r = await signupRaw();
+    const token = verifyToken()!;
+    await h.db.exec("UPDATE pending_signups SET expires_at = now() - interval '1 minute'");
+    expect((await call(routes.verify, req("/api/auth/verify", { token }))).status).toBe(400);
+    expect(await count("SELECT COUNT(*)::int AS n FROM users WHERE email = $1", r.email)).toBe(0);
+  });
+  it("rejects malformed and forged tokens", async () => {
+    for (const token of ["", "abc", "z".repeat(64), "0".repeat(64)]) {
+      expect((await call(routes.verify, req("/api/auth/verify", { token }))).status, token).toBe(400);
+    }
+  });
+  it("signing up again replaces the earlier link, and the newest password wins", async () => {
+    const email = `${uniq()}@example.com`;
+    await signupRaw({ email, password: "attacker pass 1" });
+    const first = verifyToken()!;
+    await signupRaw({ email, password: PW });
+    const second = verifyToken()!;
+    expect(first).not.toBe(second);
+    expect((await call(routes.verify, req("/api/auth/verify", { token: first }))).status).toBe(400);
+    expect((await call(routes.verify, req("/api/auth/verify", { token: second }))).status).toBe(200);
+    expect((await call(routes.login, req("/api/auth/login", { email, password: "attacker pass 1" }))).status).toBe(401);
+    expect((await call(routes.login, req("/api/auth/login", { email, password: PW }))).status).toBe(200);
+  });
+  it("limits confirmation emails per address (3/hour)", async () => {
+    const email = `${uniq()}@example.com`;
+    for (let i = 0; i < 3; i++) expect((await signupRaw({ email })).status).toBe(200);
+    expect((await signupRaw({ email })).status).toBe(429);
+    expect(h.sent.length).toBe(3);
+  });
+  it("limits sign-up requests per IP (10/hour)", async () => {
+    const ip = nextIp();
+    for (let i = 0; i < 10; i++) {
+      expect((await call(routes.register, req("/api/auth/register", { email: `${uniq()}@example.com`, nickname: "Someone", password: PW }, "POST", ip))).status).toBe(200);
+    }
+    expect((await call(routes.register, req("/api/auth/register", { email: `${uniq()}@example.com`, nickname: "Someone", password: PW }, "POST", ip))).status).toBe(429);
+  });
+  it("throttles guessing of confirmation tokens per IP", async () => {
+    const ip = nextIp();
+    for (let i = 0; i < 20; i++) expect((await call(routes.verify, req("/api/auth/verify", { token: "0".repeat(64) }, "POST", ip))).status).toBe(400);
+    expect((await call(routes.verify, req("/api/auth/verify", { token: "0".repeat(64) }, "POST", ip))).status).toBe(429);
+  });
+  it("if the email can't be sent, says so and leaves nothing pending", async () => {
+    h.sendOk = false;
+    const email = `${uniq()}@example.com`;
+    const r = await signupRaw({ email });
+    expect(r.status).toBe(502);
+    expect(await count("SELECT COUNT(*)::int AS n FROM pending_signups WHERE email = $1", email)).toBe(0);
+  });
+  it("without an email provider, sign-up works directly as before", async () => {
+    h.emailOn = false;
+    const r = await signupRaw();
+    expect(r.status).toBe(200);
+    expect(r.json.user.id).toBeGreaterThan(0);
+    expect(h.jar.get("levha_session")).toBeTruthy();
+    expect(h.sent.length).toBe(0);
   });
 });
 

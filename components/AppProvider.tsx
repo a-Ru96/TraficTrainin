@@ -25,7 +25,7 @@ interface Ctx {
   submitResult: (mode: string, score: number, total: number, xp: number) => void;
   setBest: (mode: string, v: number) => void;
   login: (email: string, password: string) => Promise<string | null>;
-  register: (email: string, nickname: string, password: string) => Promise<string | null>;
+  register: (email: string, nickname: string, password: string) => Promise<{ error: string | null; pending?: boolean }>;
   logout: () => Promise<void>;
   deleteAccount: (password: string) => Promise<string | null>;
 }
@@ -153,13 +153,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
     } catch { return "Connection error."; }
   }, [finishAuth]);
 
-  const register = useCallback(async (email: string, nickname: string, password: string) => {
+  const register = useCallback(async (email: string, nickname: string, password: string): Promise<{ error: string | null; pending?: boolean }> => {
     try {
       const { ok, data } = await post("/api/auth/register", { email, nickname, password });
-      if (!ok) return (data.error as string) || "Could not sign up.";
+      if (!ok) return { error: (data.error as string) || "Could not sign up." };
+      // With email set up, the account is created after the person opens the emailed link.
+      if (data.pending) return { error: null, pending: true };
       await finishAuth(data as Snap);
-      return null;
-    } catch { return "Connection error."; }
+      return { error: null };
+    } catch { return { error: "Connection error." }; }
   }, [finishAuth]);
 
   const logout = useCallback(async () => {

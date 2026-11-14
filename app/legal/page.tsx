@@ -35,7 +35,7 @@ export default function Legal() {
         <li>your study data: XP, streak, daily XP totals, which cards you know, and quiz and match results.</li>
       </ul>
       <p>
-        For security we also keep short-lived records of failed log-in and password-reset attempts, linked to the email address and
+        For security we also keep short-lived records of failed log-in, sign-up and password-reset attempts, linked to the email address and
         IP address used. They are used only to block guessing and abuse and are deleted automatically, normally within a day. Our
         hosting provider may also keep standard request logs (including IP addresses) to run and secure the service.
       </p>
@@ -52,7 +52,7 @@ export default function Legal() {
       <ul>
         <li><b>Vercel</b> hosts the website.</li>
         <li><b>Neon</b> hosts the database.</li>
-        <li><b>Resend</b> (or the email provider the operator configures) sends password-reset emails, only when you request one.</li>
+        <li><b>Resend</b> (or the email provider the operator configures) sends the sign-up confirmation email and password-reset emails, only when you sign up or request one.</li>
       </ul>
       <p>These providers may process data outside the UK or EU under their own safeguards.</p>
 

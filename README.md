@@ -57,7 +57,8 @@ Quiz question types (`lib/deck.ts`): sign to name, name to sign, sign to "what s
 ## Accounts, password reset and legal pages
 
 - **Forgot password** emails a one-hour, single-use link (only a hash of the token is stored). It needs an email provider; the code uses the [Resend](https://resend.com) HTTP API. Set `RESEND_API_KEY` and `EMAIL_FROM` (a sender on a domain you verified in Resend). Without them the page tells users that reset isn't set up yet, and everything else keeps working.
-- Reset links use `SITE_URL` (or Vercel's `VERCEL_PROJECT_PRODUCTION_URL`), never the request's Host header.
+- **Sign-up confirmation** uses the same email setup: a new account is only created after the person opens the emailed 24-hour, single-use link (until then only a pending record with hashed password and token exists). Without an email provider, sign-up works directly with no confirmation, so set `RESEND_API_KEY`, `EMAIL_FROM` and `SITE_URL` before opening the site to the public. Note that Resend's `onboarding@resend.dev` sender only delivers to your own Resend account address; a verified domain is needed for real users.
+- Reset and confirmation links use `SITE_URL` (or Vercel's `VERCEL_PROJECT_PRODUCTION_URL`), never the request's Host header.
 - **Delete my account** (account page) removes the user and all their data immediately.
 - `/legal` holds privacy, terms and credits. Set `NEXT_PUBLIC_CONTACT_EMAIL` so people can reach you for data requests and image removal (it needs a redeploy to take effect). Review the text for your situation: it is a plain-English template, not legal advice.
 - `GET /api/health` returns 200 when the app (and database, if configured) is healthy and 503 when the database fails. Point an uptime monitor (UptimeRobot, Better Stack, ...) at it.
@@ -69,4 +70,4 @@ Quiz question types (`lib/deck.ts`): sign to name, name to sign, sign to "what s
 npm test
 ```
 
-Runs the content checks (unique ids, images exist, every quiz question well-formed over thousands of generated rounds), unit tests (nickname filter, tokens, levels) and end-to-end tests of the real API routes against an in-process Postgres (register, login throttle, sessions, XP cap, password reset, account deletion, leaderboard). No database or network is needed.
+Runs the content checks (unique ids, images exist, every quiz question well-formed over thousands of generated rounds), unit tests (nickname filter, tokens, levels) and end-to-end tests of the real API routes against an in-process Postgres (register and email confirmation, login throttle, sessions, XP cap, password reset, account deletion, leaderboard). No database or network is needed.

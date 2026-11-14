@@ -13,6 +13,7 @@ export default function Auth() {
   const [pw, setPw] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [sentTo, setSentTo] = useState<string | null>(null); // set after sign-up while the email link is pending
   const [confirming, setConfirming] = useState(false);
   const [delPw, setDelPw] = useState("");
   const [delErr, setDelErr] = useState<string | null>(null);
@@ -20,9 +21,17 @@ export default function Auth() {
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setErr(null); setBusy(true);
-    const r = tab === "login" ? await login(email, pw) : await register(email, nick, pw);
+    if (tab === "login") {
+      const r = await login(email, pw);
+      setBusy(false);
+      if (r) setErr(r); else router.push("/");
+      return;
+    }
+    const r = await register(email, nick, pw);
     setBusy(false);
-    if (r) setErr(r); else router.push("/");
+    if (r.error) setErr(r.error);
+    else if (r.pending) { setSentTo(email.trim().toLowerCase()); setPw(""); }
+    else router.push("/");
   };
 
   const remove = async (e: FormEvent) => {
@@ -65,6 +74,20 @@ export default function Auth() {
             </div>
           </form>
         )}
+      </div>
+    );
+  }
+
+  if (sentTo) {
+    return (
+      <div className="card auth" style={{ textAlign: "center" }}>
+        <div className="eyebrow">One more step</div>
+        <h2>Check your email</h2>
+        <p className="muted">
+          We sent a confirmation link to <b>{sentTo}</b>. Open it within 24 hours to finish creating your account, then log in.
+        </p>
+        <p className="muted" style={{ fontSize: ".85rem" }}>Can&apos;t find it? Check your spam folder, or sign up again with the same email to get a new link.</p>
+        <button className="btn btn-ghost" onClick={() => { setSentTo(null); setTab("login"); }}>Back to log in</button>
       </div>
     );
   }
