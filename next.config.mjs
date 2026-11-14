@@ -27,7 +27,6 @@ const nextConfig = {
       },
       // The reset token is in this page's URL: never leak it through the Referer header.
       { source: "/reset", headers: [{ key: "Referrer-Policy", value: "no-referrer" }] },
-      { source: "/verify", headers: [{ key: "Referrer-Policy", value: "no-referrer" }] },
     ];
   },
 };

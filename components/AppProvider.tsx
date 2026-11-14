@@ -26,6 +26,7 @@ interface Ctx {
   setBest: (mode: string, v: number) => void;
   login: (email: string, password: string) => Promise<string | null>;
   register: (email: string, nickname: string, password: string) => Promise<{ error: string | null; pending?: boolean }>;
+  verifyCode: (email: string, code: string) => Promise<string | null>;
   logout: () => Promise<void>;
   deleteAccount: (password: string) => Promise<string | null>;
 }
@@ -164,6 +165,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
     } catch { return { error: "Connection error." }; }
   }, [finishAuth]);
 
+  const verifyCode = useCallback(async (email: string, code: string) => {
+    try {
+      const { ok, data } = await post("/api/auth/verify", { email, code });
+      if (!ok) return (data.error as string) || "Could not confirm the code.";
+      await finishAuth(data as Snap); // confirming the code also signs the person in
+      return null;
+    } catch { return "Connection error."; }
+  }, [finishAuth]);
+
   const logout = useCallback(async () => {
     try { await post("/api/auth/logout", {}); } catch {}
     try { localStorage.removeItem(KEY); } catch {}
@@ -187,7 +197,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const value: Ctx = {
     ready, user, dbOn, xp: state.xp, streak: state.streak, level, levelInto: into,
     known: state.known, best: state.best, pops,
-    addXp, markCard, submitResult, setBest, login, register, logout, deleteAccount,
+    addXp, markCard, submitResult, setBest, login, register, verifyCode, logout, deleteAccount,
   };
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>;
 }

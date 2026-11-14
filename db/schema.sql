@@ -45,11 +45,12 @@ CREATE TABLE IF NOT EXISTS password_resets (
   expires_at TIMESTAMPTZ NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE TABLE IF NOT EXISTS pending_signups (
+CREATE TABLE IF NOT EXISTS signup_codes (
   email TEXT PRIMARY KEY,
   nickname TEXT NOT NULL,
   password_hash TEXT NOT NULL,
-  token_hash TEXT NOT NULL UNIQUE,
+  code_hash TEXT NOT NULL,
+  attempts INT NOT NULL DEFAULT 0,
   expires_at TIMESTAMPTZ NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

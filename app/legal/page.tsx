@@ -52,7 +52,7 @@ export default function Legal() {
       <ul>
         <li><b>Vercel</b> hosts the website.</li>
         <li><b>Neon</b> hosts the database.</li>
-        <li><b>Resend</b> (or the email provider the operator configures) sends the sign-up confirmation email and password-reset emails, only when you sign up or request one.</li>
+        <li><b>Resend</b> (or the email provider the operator configures) sends the sign-up confirmation code and password-reset emails, only when you sign up or request one.</li>
       </ul>
       <p>These providers may process data outside the UK or EU under their own safeguards.</p>
 

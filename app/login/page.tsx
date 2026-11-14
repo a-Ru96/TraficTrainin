@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useApp } from "@/components/AppProvider";
 
 export default function Auth() {
-  const { user, dbOn, login, register, logout, deleteAccount, xp, streak, level, ready } = useApp();
+  const { user, dbOn, login, register, verifyCode, logout, deleteAccount, xp, streak, level, ready } = useApp();
   const router = useRouter();
   const [tab, setTab] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
@@ -13,7 +13,9 @@ export default function Auth() {
   const [pw, setPw] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [sentTo, setSentTo] = useState<string | null>(null); // set after sign-up while the email link is pending
+  const [sentTo, setSentTo] = useState<string | null>(null); // set after sign-up while the emailed code is pending
+  const [code, setCode] = useState("");
+  const [note, setNote] = useState<string | null>(null);
   const [confirming, setConfirming] = useState(false);
   const [delPw, setDelPw] = useState("");
   const [delErr, setDelErr] = useState<string | null>(null);
@@ -30,8 +32,24 @@ export default function Auth() {
     const r = await register(email, nick, pw);
     setBusy(false);
     if (r.error) setErr(r.error);
-    else if (r.pending) { setSentTo(email.trim().toLowerCase()); setPw(""); }
+    else if (r.pending) { setSentTo(email.trim().toLowerCase()); setCode(""); setNote(null); }
     else router.push("/");
+  };
+
+  const confirmCode = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!sentTo) return;
+    setErr(null); setNote(null); setBusy(true);
+    const r = await verifyCode(sentTo, code.trim());
+    setBusy(false);
+    if (r) setErr(r); else router.push("/");
+  };
+
+  const resend = async () => {
+    setErr(null); setNote(null); setBusy(true);
+    const r = await register(email, nick, pw);
+    setBusy(false);
+    if (r.error) setErr(r.error); else { setCode(""); setNote("A new code is on its way. The old one no longer works."); }
   };
 
   const remove = async (e: FormEvent) => {
@@ -82,12 +100,27 @@ export default function Auth() {
     return (
       <div className="card auth" style={{ textAlign: "center" }}>
         <div className="eyebrow">One more step</div>
-        <h2>Check your email</h2>
+        <h2>Enter your code</h2>
         <p className="muted">
-          We sent a confirmation link to <b>{sentTo}</b>. Open it within 24 hours to finish creating your account, then log in.
+          We emailed a 6-digit code to <b>{sentTo}</b>. It&apos;s valid for 30 minutes.
         </p>
-        <p className="muted" style={{ fontSize: ".85rem" }}>Can&apos;t find it? Check your spam folder, or sign up again with the same email to get a new link.</p>
-        <button className="btn btn-ghost" onClick={() => { setSentTo(null); setTab("login"); }}>Back to log in</button>
+        <form onSubmit={confirmCode} style={{ textAlign: "left" }}>
+          {err && <div className="err" role="alert">{err}</div>}
+          {note && <p className="muted" style={{ textAlign: "center", fontSize: ".88rem" }}>{note}</p>}
+          <label className="field">Confirmation code
+            <input value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))} required inputMode="numeric"
+              autoComplete="one-time-code" pattern="\d{6}" maxLength={6} placeholder="123456" autoFocus
+              style={{ textAlign: "center", fontSize: "1.5rem", letterSpacing: ".4em" }} />
+          </label>
+          <button className="btn btn-lg" style={{ width: "100%" }} disabled={busy || code.length !== 6}>
+            {busy ? <span className="spin" /> : "Confirm and sign in"}
+          </button>
+        </form>
+        <p className="muted" style={{ fontSize: ".85rem", marginTop: 14 }}>
+          Didn&apos;t get it? Check spam, or <button type="button" onClick={resend} disabled={busy}
+            style={{ background: "none", border: 0, padding: 0, color: "inherit", textDecoration: "underline", cursor: "pointer", font: "inherit" }}>send a new code</button>.
+        </p>
+        <button className="btn btn-sm btn-ghost" onClick={() => { setSentTo(null); setErr(null); setNote(null); setCode(""); setPw(""); }}>Use a different email</button>
       </div>
     );
   }

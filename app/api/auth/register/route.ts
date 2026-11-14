@@ -4,8 +4,7 @@ import { ensureSchema, getSql, hasDb, getSnapshot } from "@/lib/db";
 import { createSession } from "@/lib/auth";
 import { emailConfigured, sendEmail } from "@/lib/email";
 import { isAllowedNickname } from "@/lib/moderation";
-import { siteUrl } from "@/lib/site";
-import { hashToken, newToken } from "@/lib/tokens";
+import { hashCode, newCode } from "@/lib/tokens";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -25,10 +24,9 @@ export async function POST(req: Request) {
   if (!isAllowedNickname(nickname)) return NextResponse.json({ error: "Please choose a different nickname." }, { status: 400 });
   if (password.length < 8 || password.length > 100) return NextResponse.json({ error: "Password must be at least 8 characters." }, { status: 400 });
 
-  // With email set up, the account is only created after the person opens the emailed link.
+  // With email set up, the account is only created after the person enters the emailed code.
   // Without it (e.g. local development) sign-up works directly, as before.
-  const base = siteUrl();
-  const confirmByEmail = emailConfigured() && !!base;
+  const confirmByEmail = emailConfigured();
 
   try {
     await ensureSchema();
@@ -50,24 +48,30 @@ export async function POST(req: Request) {
       }
       await sql`INSERT INTO login_attempts (key) VALUES (${emailKey}), (${ipKey})`;
       await sql`DELETE FROM login_attempts WHERE at < now() - interval '1 day'`;
-      await sql`DELETE FROM pending_signups WHERE expires_at < now()`;
+      await sql`DELETE FROM signup_codes WHERE expires_at < now()`;
 
-      const token = newToken();
+      const code = newCode();
       const hash = await bcrypt.hash(password, 10);
-      // A new request for the same address replaces the previous pending one (and its link).
-      await sql`INSERT INTO pending_signups (email, nickname, password_hash, token_hash, expires_at)
-        VALUES (${email}, ${nickname}, ${hash}, ${hashToken(token)}, now() + interval '24 hours')
+      // A new request for the same address replaces the previous pending one (and its code).
+      await sql`INSERT INTO signup_codes (email, nickname, password_hash, code_hash, attempts, expires_at)
+        VALUES (${email}, ${nickname}, ${hash}, ${hashCode(email, code)}, 0, now() + interval '30 minutes')
         ON CONFLICT (email) DO UPDATE SET nickname = EXCLUDED.nickname, password_hash = EXCLUDED.password_hash,
-          token_hash = EXCLUDED.token_hash, expires_at = EXCLUDED.expires_at, created_at = now()`;
+          code_hash = EXCLUDED.code_hash, attempts = 0, expires_at = EXCLUDED.expires_at, created_at = now()`;
       const sent = await sendEmail(
         email,
-        "Confirm your Roadly email",
-        `Welcome to Roadly! Open this link within 24 hours to confirm your email and finish creating your account:\n` +
-          `${base}/verify?token=${token}\n\n` +
+        `${code} is your Roadly confirmation code`,
+        `Your Roadly confirmation code is:
+
+${code}
+
+` +
+          `Enter it on the sign-up page within 30 minutes to finish creating your account.
+
+` +
           `If you didn't sign up, ignore this email. No account will be created.`
       );
       if (!sent) {
-        await sql`DELETE FROM pending_signups WHERE email = ${email}`;
+        await sql`DELETE FROM signup_codes WHERE email = ${email}`;
         return NextResponse.json({ error: "We couldn't send the confirmation email. Please try again shortly." }, { status: 502 });
       }
       return NextResponse.json({ pending: true, email });
