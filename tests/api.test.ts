@@ -29,6 +29,7 @@ vi.mock("@/lib/email", () => ({
 process.env.DATABASE_URL = "postgres://test";
 process.env.AUTH_SECRET = "test-secret-0123456789abcdef";
 process.env.SITE_URL = "https://roadly.test";
+process.env.REQUIRE_EMAIL_CONFIRMATION = "true";
 
 let routes: Record<string, any>;
 beforeAll(async () => {
@@ -206,6 +207,16 @@ describe("email confirmation", () => {
     const email = `${uniq()}@example.com`;
     expect((await signupRaw({ email })).status).toBe(502);
     expect(await count("SELECT COUNT(*)::int AS n FROM signup_codes WHERE email = $1", email)).toBe(0);
+  });
+  it("when the setting is off, sign-up works directly even with email configured", async () => {
+    process.env.REQUIRE_EMAIL_CONFIRMATION = "false";
+    try {
+      const r = await signupRaw();
+      expect(r.status).toBe(200);
+      expect(r.json.user.id).toBeGreaterThan(0);
+      expect(h.jar.get("levha_session")).toBeTruthy();
+      expect(h.sent.length).toBe(0);
+    } finally { process.env.REQUIRE_EMAIL_CONFIRMATION = "true"; }
   });
   it("without an email provider, sign-up works directly as before", async () => {
     h.emailOn = false;

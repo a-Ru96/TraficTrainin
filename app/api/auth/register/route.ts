@@ -24,9 +24,9 @@ export async function POST(req: Request) {
   if (!isAllowedNickname(nickname)) return NextResponse.json({ error: "Please choose a different nickname." }, { status: 400 });
   if (password.length < 8 || password.length > 100) return NextResponse.json({ error: "Password must be at least 8 characters." }, { status: 400 });
 
-  // With email set up, the account is only created after the person enters the emailed code.
-  // Without it (e.g. local development) sign-up works directly, as before.
-  const confirmByEmail = emailConfigured();
+  // Optional: with REQUIRE_EMAIL_CONFIRMATION=true (and email set up), the account is only created after
+  // the person enters the emailed code. Off by default, e.g. while the email sender can't reach everyone yet.
+  const confirmByEmail = process.env.REQUIRE_EMAIL_CONFIRMATION === "true" && emailConfigured();
 
   try {
     await ensureSchema();
